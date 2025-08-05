@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>布局框架</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {}
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 自定义布局相关样式 */
+        .content-auto {
+            content-visibility: auto;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <!-- 顶部导航 -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                <h1 class="text-xl font-bold text-gray-800 dark:text-white">应用名称</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path id="theme-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="flex-1 container mx-auto px-4 py-8">
+        <div class="max-w-5xl mx-auto">
+            <!-- 内容区域标题 -->
+            <div class="mb-8 text-center">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">主要内容区域</h2>
+                <p class="text-gray-600 dark:text-gray-400">在此处添加您的应用内容</p>
+            </div>
+
+            <!-- 主要内容网格 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- 左侧边栏 -->
+                <div class="md:col-span-1 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 h-fit sticky top-8">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">侧边栏</h3>
+                    <div class="space-y-4">
+                        <!-- 侧边栏项目 -->
+                        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
+                            <p class="text-gray-800 dark:text-gray-200">菜单项 1</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
+                            <p class="text-gray-800 dark:text-gray-200">菜单项 2</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
+                            <p class="text-gray-800 dark:text-gray-200">菜单项 3</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 中间内容区 -->
+                <div class="md:col-span-2 space-y-6">
+                    <!-- 内容卡片 1 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">内容卡片 1</h3>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                            <p class="text-gray-700 dark:text-gray-300">在此处添加您的内容...</p>
+                        </div>
+                    </div>
+
+                    <!-- 内容卡片 2 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">内容卡片 2</h3>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                            <p class="text-gray-700 dark:text-gray-300">在此处添加您的内容...</p>
+                        </div>
+                    </div>
+
+                    <!-- 内容卡片 3 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">内容卡片 3</h3>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                            <p class="text-gray-700 dark:text-gray-300">在此处添加您的内容...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 全宽内容区域 -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">全宽内容区域</h3>
+                <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                    <p class="text-gray-700 dark:text-gray-300">在此处添加全宽内容...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部声明 -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                &copy; 2023 应用名称. 版权所有.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 暗黑模式切换
+        const themeToggle = document.getElementById('theme-toggle');
+        const themePath = document.getElementById('theme-path');
+        
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themePath.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+                themePath.setAttribute('d', 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+                themePath.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
+            }
+        });
+    </script>
+</body>
+</html>

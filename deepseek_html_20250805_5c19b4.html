@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图片压缩工具</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/compressorjs@1.1.1/dist/compressor.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            light: '#3b82f6',
+                            dark: '#60a5fa'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .drag-active {
+            border-color: #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.1) !important;
+        }
+        .dark .drag-active {
+            border-color: #60a5fa !important;
+            background-color: rgba(96, 165, 250, 0.1) !important;
+        }
+        .processing::after {
+            content: "...";
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: "."; }
+            40% { content: ".."; }
+            60%, 100% { content: "..."; }
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <!-- 顶部导航 -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo和品牌 -->
+                <div class="flex items-center space-x-2 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-primary-light dark:text-primary-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span class="text-xl font-bold text-gray-800 dark:text-white hidden sm:inline">图片压缩工具</span>
+                </div>
+
+                <!-- 主导航 - 桌面版 -->
+                <nav class="hidden md:flex space-x-1">
+                    <a href="#" class="px-3 py-2 rounded-md text-sm font-medium bg-primary-light dark:bg-primary-dark text-white">
+                        图片压缩
+                    </a>
+                    <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                        格式转换
+                    </a>
+                    <a href="#" class="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                        尺寸调整
+                    </a>
+                </nav>
+
+                <!-- 右侧功能区 -->
+                <div class="flex items-center space-x-3">
+                    <!-- 暗黑模式切换 -->
+                    <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path id="theme-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </button>
+                    
+                    <!-- 移动端菜单按钮 -->
+                    <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 移动端菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium bg-primary-light dark:bg-primary-dark text-white">
+                    图片压缩
+                </a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                    格式转换
+                </a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                    尺寸调整
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="flex-1 container mx-auto px-4 py-8">
+        <div class="max-w-3xl mx-auto">
+            <!-- 隐私声明横幅 -->
+            <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6 flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500 dark:text-blue-400 mt-0.5 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                </svg>
+                <div class="text-sm text-blue-700 dark:text-blue-300">
+                    <strong>隐私保护：</strong>所有图片处理都在您的浏览器中完成，我们不会上传或存储您的任何图片数据。
+                </div>
+            </div>
+
+            <!-- 上传区域 -->
+            <div id="upload-container" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center transition-all duration-300 mb-8 cursor-pointer">
+                <div class="max-w-md mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-white">拖放图片到此处</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">或 <span class="text-primary-light dark:text-primary-dark font-medium">点击选择文件</span></p>
+                    <input type="file" id="file-input" class="hidden" accept="image/*">
+                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">支持 JPG, PNG, WEBP, GIF 等格式</p>
+                </div>
+            </div>
+
+            <!-- 处理选项面板 -->
+            <div id="options-container" class="hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">压缩设置</h2>
+                
+                <div class="space-y-6">
+                    <!-- 压缩选项 -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label for="quality" class="block text-sm font-medium text-gray-700 dark:text-gray-300">压缩质量</label>
+                            <span id="quality-value" class="text-sm text-gray-500 dark:text-gray-400">80%</span>
+                        </div>
+                        <input type="range" id="quality" name="quality" min="10" max="100" value="80" class="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <span>较小文件</span>
+                            <span>较好质量</span>
+                        </div>
+                    </div>
+
+                    <!-- 输出格式 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">输出格式</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button data-format="jpeg" class="format-option px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                JPG
+                            </button>
+                            <button data-format="png" class="format-option px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                PNG
+                            </button>
+                            <button data-format="webp" class="format-option px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                WEBP
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 压缩按钮 -->
+                    <button id="compress-btn" class="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-light dark:bg-primary-dark hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                        </svg>
+                        开始压缩
+                    </button>
+                </div>
+            </div>
+
+            <!-- 处理状态 -->
+            <div id="status-container" class="hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 mb-8 text-center">
+                <div class="animate-pulse flex flex-col items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary-light dark:text-primary-dark mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">正在压缩<span class="processing"></span></h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">请稍候，这可能需要一些时间</p>
+                    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mt-4">
+                        <div id="progress-bar" class="bg-primary-light dark:bg-primary-dark h-2.5 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预览和下载区域 -->
+            <div id="result-container" class="hidden bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">压缩结果</h2>
+                    <div class="text-sm">
+                        <span id="file-size-before" class="text-gray-500 dark:text-gray-400 line-through mr-2"></span>
+                        <span id="file-size-after" class="font-medium text-green-600 dark:text-green-400"></span>
+                        <span id="compression-ratio" class="ml-2 text-gray-500 dark:text-gray-400"></span>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex-1">
+                        <div class="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+                            <img id="result-preview" class="w-full h-auto max-h-96 object-contain" src="" alt="压缩后的图片">
+                        </div>
+                    </div>
+                    <div class="md:w-48 flex flex-col space-y-3">
+                        <button id="download-btn" class="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-light dark:bg-primary-dark hover:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            下载图片
+                        </button>
+                        <button id="new-file-btn" class="w-full flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            处理新图片
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部声明 -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                &copy; 2023 图片压缩工具. 所有处理均在您的浏览器本地完成，不会上传任何数据.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 暗黑模式切换
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const themePath = document.getElementById('theme-path');
+        
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themePath.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+                themePath.setAttribute('d', 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+                themePath.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
+            }
+        });
+
+        // 移动端菜单切换
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', function() {
+            const isHidden = mobileMenu.classList.contains('hidden');
+            if (isHidden) {
+                mobileMenu.classList.remove('hidden');
+                mobileMenuButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                `;
+            } else {
+                mobileMenu.classList.add('hidden');
+                mobileMenuButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                `;
+            }
+        });
+
+        // 图片压缩功能
+        const uploadContainer = document.getElementById('upload-container');
+        const fileInput = document.getElementById('file-input');
+        const optionsContainer = document.getElementById('options-container');
+        const statusContainer = document.getElementById('status-container');
+        const resultContainer = document.getElementById('result-container');
+        const qualitySlider = document.getElementById('quality');
+        const qualityValue = document.getElementById('quality-value');
+        const compressBtn = document.getElementById('compress-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const newFileBtn = document.getElementById('new-file-btn');
+        const fileSizeBefore = document.getElementById('file-size-before');
+        const fileSizeAfter = document.getElementById('file-size-after');
+        const compressionRatio = document.getElementById('compression-ratio');
+        const resultPreview = document.getElementById('result-preview');
+        const progressBar = document.getElementById('progress-bar');
+
+        let currentFile = null;
+        let compressedBlob = null;
+        let originalSize = 0;
+
+        // 更新质量显示
+        qualitySlider.addEventListener('input', function() {
+            qualityValue.textContent = `${this.value}%`;
+        });
+
+        // 点击上传区域触发文件选择
+        uploadContainer.addEventListener('click', () => fileInput.click());
+        
+        // 拖放功能
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, preventDefaults, false);
+            document.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadContainer.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            uploadContainer.classList.add('drag-active');
+        }
+        
+        function unhighlight() {
+            uploadContainer.classList.remove('drag-active');
+        }
+        
+        // 处理文件选择/拖放
+        fileInput.addEventListener('change', handleFiles);
+        uploadContainer.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length) {
+                handleFiles({ target: { files } });
+            }
+        }
+        
+        function handleFiles(e) {
+            const file = e.target.files[0];
+            if (!file.type.match('image.*')) {
+                alert('请选择有效的图片文件');
+                return;
+            }
+            
+            currentFile = file;
+            originalSize = file.size;
+            
+            // 显示文件信息
+            fileSizeBefore.textContent = formatFileSize(file.size);
+            
+            // 显示选项面板
+            uploadContainer.classList.add('hidden');
+            optionsContainer.classList.remove('hidden');
+            
+            // 设置默认格式
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (ext === 'png') {
+                document.querySelector('.format-option[data-format="png"]').click();
+            } else if (ext === 'webp') {
+                document.querySelector('.format-option[data-format="webp"]').click();
+            } else {
+                document.querySelector('.format-option[data-format="jpeg"]').click();
+            }
+        }
+
+        // 格式选项
+        let selectedFormat = 'jpeg';
+        document.querySelectorAll('.format-option').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.format-option').forEach(b => {
+                    b.classList.remove('bg-primary-light', 'dark:bg-primary-dark', 'text-white', 'border-transparent');
+                    b.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300', 'border-gray-300', 'dark:border-gray-600');
+                });
+                this.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300', 'border-gray-300', 'dark:border-gray-600');
+                this.classList.add('bg-primary-light', 'dark:bg-primary-dark', 'text-white', 'border-transparent');
+                selectedFormat = this.dataset.format;
+            });
+        });
+
+        // 开始压缩
+        compressBtn.addEventListener('click', function() {
+            if (!currentFile) return;
+            
+            optionsContainer.classList.add('hidden');
+            statusContainer.classList.remove('hidden');
+            
+            // 模拟进度条动画
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress > 90) clearInterval(progressInterval);
+                progressBar.style.width = `${Math.min(progress, 100)}%`;
+            }, 200);
+            
+            // 实际压缩处理
+            setTimeout(() => {
+                compressImage(currentFile);
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+            }, 500);
+        });
+
+        // 使用compressor.js压缩图片
+        function compressImage(file) {
+            const quality = parseInt(qualitySlider.value) / 100;
+            
+            new Compressor(file, {
+                quality: quality,
+                mimeType: `image/${selectedFormat}`,
+                success(result) {
+                    compressedBlob = result;
+                    const compressedSize = result.size;
+                    const ratio = ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
+                    
+                    // 显示结果
+                    statusContainer.classList.add('hidden');
+                    resultContainer.classList.remove('hidden');
+                    
+                    fileSizeAfter.textContent = formatFileSize(compressedSize);
+                    compressionRatio.textContent = `(节省 ${ratio}%)`;
+                    
+                    // 显示预览
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        resultPreview.src = e.target.result;
+                    };
+                    reader.readAsDataURL(result);
+                },
+                error(err) {
+                    console.error(err.message);
+                    alert('图片压缩失败: ' + err.message);
+                    resetUI();
+                }
+            });
+        }
+
+        // 下载图片
+        downloadBtn.addEventListener('click', function() {
+            if (!compressedBlob) return;
+            
+            const fileName = currentFile.name.replace(/\.[^/.]+$/, '') + '_compressed.' + selectedFormat;
+            saveAs(compressedBlob, fileName);
+        });
+
+        // 处理新图片
+        newFileBtn.addEventListener('click', resetUI);
+
+        // 重置UI状态
+        function resetUI() {
+            currentFile = null;
+            compressedBlob = null;
+            originalSize = 0;
+            fileInput.value = '';
+            
+            optionsContainer.classList.add('hidden');
+            statusContainer.classList.add('hidden');
+            resultContainer.classList.add('hidden');
+            uploadContainer.classList.remove('hidden');
+            
+            progressBar.style.width = '0%';
+        }
+
+        // 格式化文件大小
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // 简单的文件保存实现 (实际项目中应使用FileSaver.js)
+        function saveAs(blob, filename) {
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(link.href), 100);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具网站</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full flex flex-col bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <!-- 顶部导航 - 添加背景和选中效果 -->
+    <header class="bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 shadow-md sticky top-0 z-50 transition-all duration-300">
+        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <h1 class="text-lg font-bold text-gray-800 dark:text-white">工具集</h1>
+            </div>
+            
+            <!-- 桌面端导航菜单 -->
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="#" class="text-primary dark:text-primary bg-primary/10 dark:bg-primary/20 px-3 py-2 rounded-md transition-all duration-200">首页</a>
+                <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 px-3 py-2 rounded-md transition-all duration-200">工具1</a>
+                <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 px-3 py-2 rounded-md transition-all duration-200">工具2</a>
+                <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 px-3 py-2 rounded-md transition-all duration-200">工具3</a>
+                <a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 px-3 py-2 rounded-md transition-all duration-200">关于</a>
+            </nav>
+            
+            <!-- 移动端菜单按钮和暗黑模式切换 -->
+            <div class="flex items-center md:order-2 space-x-2">
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path id="theme-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-gray-800 shadow-lg">
+            <div class="px-4 py-2 space-y-1">
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-primary dark:text-primary bg-gray-100 dark:bg-gray-700 transition-colors duration-200">首页</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">工具1</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">工具2</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">工具3</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">关于</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main class="flex-1 container mx-auto px-4 py-8">
+        <div class="max-w-6xl mx-auto">
+            <!-- 内容标题 -->
+            <div class="text-center mb-10">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-3">工具名称</h2>
+                <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">这里是工具的简短描述，介绍该工具的主要功能和用途。</p>
+            </div>
+
+            <!-- 工具内容区域 - 增强层次感 -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 md:p-8 mb-10 transition-all duration-300 hover:shadow-xl relative z-10 transform hover:-translate-y-1 overflow-hidden">
+                <div class="absolute top-0 right-0 h-24 w-24 bg-primary/10 rounded-bl-full -z-10"></div>
+                <!-- 工具主体内容 -->
+                <div class="flex flex-col space-y-6">
+                    <!-- 工具说明 -->
+                    <div class="prose dark:prose-invert max-w-none">
+                        <p>这是工具的详细说明，可以包含使用方法、注意事项等信息。</p>
+                    </div>
+
+                    <!-- 工具操作区 -->
+                    <div class="p-6 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-4">工具操作</h3>
+                        <!-- 这里放置工具的具体操作界面 -->
+                        <div class="flex flex-col items-center justify-center py-10">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 dark:text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <p class="text-gray-500 dark:text-gray-400">工具内容区域</p>
+                        </div>
+                    </div>
+
+                    <!-- 工具按钮区 -->
+                    <div class="flex flex-wrap justify-center gap-4 pt-4">
+                        <button class="px-6 py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition-colors duration-200 shadow-sm flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                            <span>使用工具</span>
+                        </button>
+                        <button class="px-6 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 shadow-sm flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>查看帮助</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 相关工具推荐 - 增强层次感 -->
+            <div class="mb-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700/50">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">相关工具</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 相关工具卡片 1 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+                        <div class="h-12 w-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-2">相关工具 1</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">这是相关工具的简短描述。</p>
+                        <a href="#" class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">了解更多 →</a>
+                    </div>
+
+                    <!-- 相关工具卡片 2 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+                        <div class="h-12 w-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-2">相关工具 2</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">这是相关工具的简短描述。</p>
+                        <a href="#" class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">了解更多 →</a>
+                    </div>
+
+                    <!-- 相关工具卡片 3 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-all duration-200 hover:shadow-md hover:-translate-y-1">
+                        <div class="h-12 w-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-medium text-gray-800 dark:text-white mb-2">相关工具 3</h3>
+                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">这是相关工具的简短描述。</p>
+                        <a href="#" class="text-primary hover:text-primary/80 text-sm font-medium transition-colors duration-200">了解更多 →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部声明 -->
+    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-6 mt-auto">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-4 mb-6">
+                <a href="#" class="text-primary dark:text-primary bg-primary/10 dark:bg-primary/20 px-3 py-2 rounded-md transition-all duration-200">首页</a>
+                <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 px-3 py-2 rounded-md transition-all duration-200">工具列表</a>
+                <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 px-3 py-2 rounded-md transition-all duration-200">关于我们</a>
+                <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 px-3 py-2 rounded-md transition-all duration-200">隐私政策</a>
+                <a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary hover:bg-primary/10 dark:hover:bg-primary/20 px-3 py-2 rounded-md transition-all duration-200">联系我们</a>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                &copy; 2023 工具集. 保留所有权利.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 暗黑模式切换
+        const themeToggle = document.getElementById('theme-toggle');
+        const themePath = document.getElementById('theme-path');
+        
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            themePath.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+                themePath.setAttribute('d', 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+                themePath.setAttribute('d', 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z');
+            }
+        });
+
+        // 移动端菜单切换
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 点击导航链接关闭移动端菜单
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>

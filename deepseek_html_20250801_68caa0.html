@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64工具 - 全能工具箱</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+        textarea {
+            resize: none;
+            min-height: 120px;
+        }
+        .copy-btn:hover .copy-icon {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen bg-gray-50">
+    <!-- 顶部导航栏 -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-tools text-blue-500 text-2xl"></i>
+                    <h1 class="text-xl font-bold text-gray-800">全能工具箱</h1>
+                </div>
+                <!-- 桌面导航 -->
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/" class="text-gray-600 hover:text-blue-500">首页</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-500">开发者</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-500">设计</a>
+                    <a href="#" class="text-gray-600 hover:text-blue-500">关于</a>
+                </nav>
+                <!-- 移动端菜单按钮 -->
+                <button id="mobile-menu-button" class="md:hidden text-gray-600">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+            <!-- 移动端菜单 -->
+            <div id="mobile-menu" class="mobile-menu md:hidden bg-gray-50">
+                <div class="flex flex-col space-y-2 pb-3 px-4">
+                    <a href="/" class="py-2 text-gray-600 hover:text-blue-500 border-b border-gray-200">首页</a>
+                    <a href="#" class="py-2 text-gray-600 hover:text-blue-500 border-b border-gray-200">开发者工具</a>
+                    <a href="#" class="py-2 text-gray-600 hover:text-blue-500 border-b border-gray-200">设计工具</a>
+                    <a href="#" class="py-2 text-gray-600 hover:text-blue-500 border-b border-gray-200">关于我们</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="max-w-3xl mx-auto">
+            <!-- 工具标题 -->
+            <div class="flex items-center mb-6">
+                <div class="bg-green-100 p-3 rounded-full mr-4">
+                    <i class="fas fa-font text-green-500 text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Base64编码/解码工具</h1>
+                    <p class="text-gray-600">在线进行Base64编码和解码操作</p>
+                </div>
+            </div>
+            
+            <!-- 工具功能区 -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <!-- 输入区 -->
+                <div class="p-5 border-b">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="font-medium text-gray-700">输入内容</label>
+                        <div class="flex space-x-2">
+                            <button id="clear-input" class="text-gray-500 hover:text-red-500 text-sm">
+                                <i class="fas fa-trash-alt mr-1"></i>清空
+                            </button>
+                            <button id="paste-input" class="text-gray-500 hover:text-blue-500 text-sm">
+                                <i class="fas fa-paste mr-1"></i>粘贴
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="input-text" class="w-full p-3 border rounded focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="请输入要编码或解码的内容..."></textarea>
+                    <div class="flex flex-wrap gap-2 mt-3">
+                        <button id="encode-btn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded flex-1 min-w-[120px]">
+                            <i class="fas fa-lock mr-2"></i>Base64编码
+                        </button>
+                        <button id="decode-btn" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded flex-1 min-w-[120px]">
+                            <i class="fas fa-lock-open mr-2"></i>Base64解码
+                        </button>
+                        <button id="encode-url-btn" class="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded flex-1 min-w-[120px]">
+                            <i class="fas fa-link mr-2"></i>URL编码
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 输出区 -->
+                <div class="p-5">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="font-medium text-gray-700">输出结果</label>
+                        <div class="flex items-center">
+                            <span id="result-info" class="text-sm text-gray-500 mr-2"></span>
+                            <button id="copy-output" class="copy-btn text-gray-500 hover:text-blue-500 relative">
+                                <span class="copy-text">复制</span>
+                                <i class="fas fa-copy copy-icon ml-1 opacity-70"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="output-text" readonly class="w-full p-3 border rounded bg-gray-50"></textarea>
+                </div>
+            </div>
+            
+            <!-- 使用说明 -->
+            <div class="mt-8 bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-5 border-b">
+                    <h3 class="font-bold text-lg flex items-center">
+                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                        <span>使用说明</span>
+                    </h3>
+                </div>
+                <div class="p-5">
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span><strong>编码</strong>：将文本转换为Base64编码格式</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span><strong>解码</strong>：将Base64编码还原为原始文本</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                            <span><strong>URL编码</strong>：对URL进行安全的Base64编码（替换+/为-_）</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-2"></i>
+                            <span>解码时如果输入不是有效的Base64编码，将会显示错误信息</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部 -->
+    <footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <p class="text-gray-400 mb-2 text-sm">为开发者、设计师和创作者提供的免费在线工具集合</p>
+                <p class="text-gray-500 text-xs">© 2023 全能工具箱 · 保留所有权利</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单切换
+        const menuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('open');
+            const icon = menuButton.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+        
+        // Base64工具功能实现
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('input-text');
+            const outputText = document.getElementById('output-text');
+            const resultInfo = document.getElementById('result-info');
+            const copyBtn = document.getElementById('copy-output');
+            
+            // 编码按钮
+            document.getElementById('encode-btn').addEventListener('click', function() {
+                if (!inputText.value.trim()) {
+                    showResult('请输入要编码的内容', 'text-red-500');
+                    return;
+                }
+                try {
+                    const encoded = btoa(unescape(encodeURIComponent(inputText.value)));
+                    outputText.value = encoded;
+                    showResult('编码成功', 'text-green-500');
+                } catch (e) {
+                    showResult('编码失败: ' + e.message, 'text-red-500');
+                }
+            });
+            
+            // 解码按钮
+            document.getElementById('decode-btn').addEventListener('click', function() {
+                if (!inputText.value.trim()) {
+                    showResult('请输入要解码的内容', 'text-red-500');
+                    return;
+                }
+                try {
+                    const decoded = decodeURIComponent(escape(atob(inputText.value)));
+                    outputText.value = decoded;
+                    showResult('解码成功', 'text-green-500');
+                } catch (e) {
+                    showResult('解码失败: 请输入有效的Base64编码', 'text-red-500');
+                }
+            });
+            
+            // URL编码按钮
+            document.getElementById('encode-url-btn').addEventListener('click', function() {
+                if (!inputText.value.trim()) {
+                    showResult('请输入要编码的内容', 'text-red-500');
+                    return;
+                }
+                try {
+                    const encoded = btoa(unescape(encodeURIComponent(inputText.value)))
+                        .replace(/\+/g, '-')
+                        .replace(/\//g, '_')
+                        .replace(/=+$/, '');
+                    outputText.value = encoded;
+                    showResult('URL编码成功', 'text-green-500');
+                } catch (e) {
+                    showResult('编码失败: ' + e.message, 'text-red-500');
+                }
+            });
+            
+            // 清空输入
+            document.getElementById('clear-input').addEventListener('click', function() {
+                inputText.value = '';
+                inputText.focus();
+            });
+            
+            // 粘贴输入
+            document.getElementById('paste-input').addEventListener('click', async function() {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    inputText.value = text;
+                    showResult('已粘贴剪贴板内容', 'text-blue-500');
+                } catch (e) {
+                    showResult('粘贴失败: ' + e.message, 'text-red-500');
+                }
+            });
+            
+            // 复制输出
+            copyBtn.addEventListener('click', async function() {
+                if (!outputText.value) {
+                    showResult('没有内容可复制', 'text-red-500');
+                    return;
+                }
+                try {
+                    await navigator.clipboard.writeText(outputText.value);
+                    const copyText = copyBtn.querySelector('.copy-text');
+                    copyText.textContent = '已复制';
+                    setTimeout(() => {
+                        copyText.textContent = '复制';
+                    }, 2000);
+                    showResult('内容已复制到剪贴板', 'text-blue-500');
+                } catch (e) {
+                    showResult('复制失败: ' + e.message, 'text-red-500');
+                }
+            });
+            
+            // 显示结果信息
+            function showResult(message, colorClass) {
+                resultInfo.textContent = message;
+                resultInfo.className = 'text-sm ' + colorClass;
+            }
+            
+            // 输入框自动调整高度
+            inputText.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        });
+    </script>
+</body>
+</html>
