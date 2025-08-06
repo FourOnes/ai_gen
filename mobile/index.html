@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>舒尔特方格 - 首页</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        light: '#F9FAFB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .btn-primary {
+                @apply bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95;
+            }
+            .btn-secondary {
+                @apply bg-white hover:bg-gray-100 text-dark font-medium py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 border border-gray-200;
+            }
+            .card {
+                @apply bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-lg;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen font-sans text-dark">
+    <!-- 顶部导航 -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm py-4 px-6">
+        <div class="flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-primary">舒尔特方格</h1>
+            <button class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-300">
+                <i class="fa fa-cog text-gray-600"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="container mx-auto px-6 py-6 flex flex-col items-center justify-center min-h-[calc(100vh-140px)]">
+        <!-- 游戏标题和介绍 -->
+        <div class="text-center mb-6">
+            <h2 class="text-[clamp(1.8rem,5vw,2.2rem)] font-bold mb-2">舒尔特方格</h2>
+            <p class="text-gray-600 max-w-md mx-auto text-sm">锻炼你的注意力、观察力和反应速度</p>
+        </div>
+
+        <!-- 主按钮区域 -->
+        <div class="flex flex-col space-y-3 w-full max-w-md mb-6">
+            <a href="game.html" class="btn-primary flex items-center justify-center space-x-2 py-3.5">
+                <i class="fa fa-play-circle"></i>
+                <span class="text-base">开始游戏</span>
+            </a>
+            <a href="leaderboard.html" class="btn-secondary flex items-center justify-center space-x-2 py-3">
+                <i class="fa fa-trophy"></i>
+                <span>查看排行榜</span>
+            </a>
+        </div>
+
+        <!-- 游戏特色 -->
+        <div class="grid grid-cols-3 gap-2 w-full max-w-md">
+            <div class="flex flex-col items-center text-center p-2">
+                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mb-1.5">
+                    <i class="fa fa-sliders text-primary text-xs"></i>
+                </div>
+                <h3 class="font-semibold text-xs mb-1">多种难度</h3>
+                <p class="text-[10px] text-gray-600">3x3到10x10</p>
+            </div>
+            <div class="flex flex-col items-center text-center p-2">
+                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mb-1.5">
+                    <i class="fa fa-bolt text-secondary text-xs"></i>
+                </div>
+                <h3 class="font-semibold text-xs mb-1">震动反馈</h3>
+                <p class="text-[10px] text-gray-600">操作提醒</p>
+            </div>
+            <div class="flex flex-col items-center text-center p-2">
+                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mb-1.5">
+                    <i class="fa fa-globe text-accent text-xs"></i>
+                </div>
+                <h3 class="font-semibold text-xs mb-1">全球排行</h3>
+                <p class="text-[10px] text-gray-600">比拼速度</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部导航 -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white shadow-lg py-2 px-6">
+        <div class="flex justify-around">
+            <a href="index.html" class="flex flex-col items-center text-primary">
+                <i class="fa fa-home text-lg"></i>
+                <span class="text-[10px] mt-1">首页</span>
+            </a>
+            <a href="game.html" class="flex flex-col items-center text-gray-400">
+                <i class="fa fa-gamepad text-lg"></i>
+                <span class="text-[10px] mt-1">游戏</span>
+            </a>
+            <a href="leaderboard.html" class="flex flex-col items-center text-gray-400">
+                <i class="fa fa-trophy text-lg"></i>
+                <span class="text-[10px] mt-1">排行</span>
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // 页面交互逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加按钮悬停效果
+            const buttons = document.querySelectorAll('a[href]');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    // 模拟页面切换效果
+                    document.body.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                    setTimeout(() => {
+                        window.location.href = this.getAttribute('href');
+                    }, 200);
+                    e.preventDefault();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

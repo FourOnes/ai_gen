@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>舒尔特方格 - 排行榜</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        light: '#F9FAFB',
+                        gold: '#FFD700',
+                        silver: '#C0C0C0',
+                        bronze: '#CD7F32'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .rank-item {
+                @apply flex items-center p-4 rounded-lg transition-all duration-300 hover:bg-gray-50;
+            }
+            .tab-active {
+                @apply text-primary border-primary font-medium;
+            }
+            .tab-inactive {
+                @apply text-gray-500 border-transparent;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen font-sans text-dark">
+    <!-- 顶部导航 -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm py-4 px-6 flex justify-between items-center">
+        <a href="index.html" class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-300">
+            <i class="fa fa-arrow-left text-gray-600"></i>
+        </a>
+        <h1 class="text-xl font-bold text-primary">排行榜</h1>
+        <div class="w-8"></div> <!-- 占位元素，保持标题居中 -->
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="container mx-auto px-6 py-8 min-h-[calc(100vh-80px)]">
+        <!-- 标签页切换 -->
+        <div class="flex border-b border-gray-200 mb-6">
+            <button id="global-tab" class="flex-1 py-3 text-center border-b-2 tab-active transition-colors duration-300">
+                全球排行
+            </button>
+            <button id="my-tab" class="flex-1 py-3 text-center border-b-2 tab-inactive transition-colors duration-300">
+                我的最佳
+            </button>
+        </div>
+
+        <!-- 难度选择器 -->
+        <div class="bg-white rounded-xl shadow-md p-4 mb-6 overflow-x-auto">
+            <div class="flex space-x-3 whitespace-nowrap">
+                <button class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium transition-colors duration-300">
+                    全部难度
+                </button>
+                <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors duration-300">
+                    3x3
+                </button>
+                <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors duration-300">
+                    4x4
+                </button>
+                <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors duration-300">
+                    5x5
+                </button>
+                <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors duration-300">
+                    6x6
+                </button>
+                <button class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors duration-300">
+                    7x7+
+                </button>
+            </div>
+        </div>
+
+        <!-- 全球排行榜 -->
+        <div id="global-leaderboard" class="space-y-3 mb-8">
+            <!-- 前三名特殊样式 -->
+            <div class="rank-item bg-white shadow-md rounded-xl overflow-hidden relative">
+                <div class="w-12 h-12 rounded-full bg-gold flex items-center justify-center text-white font-bold text-xl mr-4">1</div>
+                <div class="flex items-center flex-1">
+                    <img src="https://picsum.photos/id/1/50/50" alt="用户头像" class="w-10 h-10 rounded-full mr-3">
+                    <div class="flex-1">
+                        <p class="font-semibold">张三</p>
+                        <p class="text-sm text-gray-500">中国</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-lg">00:05.23</p>
+                        <p class="text-xs text-gray-500">5x5</p>
+                    </div>
+                </div>
+                <div class="absolute -right-4 -top-4 w-16 h-16 opacity-10">
+                    <i class="fa fa-trophy text-6xl text-gold"></i>
+                </div>
+            </div>
+
+            <div class="rank-item bg-white shadow-md rounded-xl overflow-hidden relative">
+                <div class="w-12 h-12 rounded-full bg-silver flex items-center justify-center text-white font-bold text-xl mr-4">2</div>
+                <div class="flex items-center flex-1">
+                    <img src="https://picsum.photos/id/2/50/50" alt="用户头像" class="w-10 h-10 rounded-full mr-3">
+                    <div class="flex-1">
+                        <p class="font-semibold">李四</p>
+                        <p class="text-sm text-gray-500">美国</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-lg">00:05.87</p>
+                        <p class="text-xs text-gray-500">5x5</p>
+                    </div>
+                </div>
+                <div class="absolute -right-4 -top-4 w-16 h-16 opacity-10">
+                    <i class="fa fa-trophy text-6xl text-silver"></i>
+                </div>
+            </div>
+
+            <div class="rank-item bg-white shadow-md rounded-xl overflow-hidden relative">
+                <div class="w-12 h-12 rounded-full bg-bronze flex items-center justify-center text-white font-bold text-xl mr-4">3</div>
+                <div class="flex items-center flex-1">
+                    <img src="https://picsum.photos/id/3/50/50" alt="用户头像" class="w-10 h-10 rounded-full mr-3">
+                    <div class="flex-1">
+                        <p class="font-semibold">王五</p>
+                        <p class="text-sm text-gray-500">日本</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-lg">00:06.12</p>
+                        <p class="text-xs text-gray-500">5x5</p>
+                    </div>
+                </div>
+                <div class="absolute -right-4 -top-4 w-16 h-16 opacity-10">
+                    <i class="fa fa-trophy text-6xl text-bronze"></i>
+                </div>
+            </div>
+
+            <!-- 其他排名 -->
+            <div class="rank-item bg-white shadow-sm">
+                <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-xl mr-4">4</div>
+                <div class="flex items-center flex-1">
+                    <img src="https://picsum.photos/id/4/50/50" alt="用户头像" class="w-10 h-10 rounded-full mr-3">
+                    <div class="flex-1">
+                        <p class="font-semibold">赵六</p>
+                        <p class="text-sm text-gray-500">德国</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-lg">00:06.45</p>
+                        <p class="text-xs text-gray-500">5x5</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rank-item bg-white shadow-sm">
+                <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-xl mr-4">5</div>
+                <div class="flex items-center flex-1">
+                    <img src="https://picsum.photos/id/5/50/50" alt="用户头像" class="w-10 h-10 rounded-full mr-3">
+                    <div class="flex-1">
+                        <p class="font-semibold">孙七</p>
+                        <p class="text-sm text-gray-500">法国</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-lg">00:06.78</p>
+                        <p class="text-xs text-gray-500">5x5</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rank-item bg-white shadow-sm">
+                <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 font-bold text-xl mr-4">6</div>
+                <div class="flex items-center flex-1">
+                    <img src="https://picsum.photos/id/6/50/50" alt="用户头像" class="w-10 h-10 rounded-full mr-3">
+                    <div class="flex-1">
+                        <p class="font-semibold">周八</p>
+                        <p class="text-sm text-gray-500">英国</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-lg">00:07.12</p>
+                        <p class="text-xs text-gray-500">5x5</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 我的最佳排行榜 (默认隐藏) -->
+        <div id="my-leaderboard" class="hidden space-y-3 mb-8">
+            <div class="rank-item bg-white shadow-sm">
+                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl mr-4">3x3</div>
+                <div class="flex items-center flex-1">
+                    <div class="flex-1">
+                        <p class="font-semibold">简单</p>
+                        <p class="text-sm text-gray-500">上次玩: 今天</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-lg">00:02.45</p>
+                        <p class="text-xs text-green-500"><i class="fa fa-trophy"></i> 个人最佳</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rank-item bg-white shadow-sm">
+                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl mr-4">4x4</div>
+                <div class="flex items-center flex-1">
+                    <div class="flex-1">
+                        <p class="font-semibold">中等</p>
+                        <p class="text-sm text-gray-500">上次玩: 昨天</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-lg">00:06.78</p>
+                        <p class="text-xs text-green-500"><i class="fa fa-trophy"></i> 个人最佳</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rank-item bg-white shadow-sm">
+                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl mr-4">5x5</div>
+                <div class="flex items-center flex-1">
+                    <div class="flex-1">
+                        <p class="font-semibold">困难</p>
+                        <p class="text-sm text-gray-500">上次玩: 3天前</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-lg">00:15.23</p>
+                        <p class="text-xs text-green-500"><i class="fa fa-trophy"></i> 个人最佳</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rank-item bg-white shadow-sm">
+                <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl mr-4">6x6</div>
+                <div class="flex items-center flex-1">
+                    <div class="flex-1">
+                        <p class="font-semibold">专家</p>
+                        <p class="text-sm text-gray-500">上次玩: 1周前</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-lg">00:32.45</p>
+                        <p class="text-xs text-green-500"><i class="fa fa-trophy"></i> 个人最佳</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+    <script>
+        // 标签页切换逻辑
+        document.addEventListener('DOMContentLoaded', function() {
+            const globalTab = document.getElementById('global-tab');
+            const myTab = document.getElementById('my-tab');
+            const globalLeaderboard = document.getElementById('global-leaderboard');
+            const myLeaderboard = document.getElementById('my-leaderboard');
+
+            // 切换到全球排行榜
+            globalTab.addEventListener('click', function() {
+                globalTab.classList.remove('tab-inactive');
+                globalTab.classList.add('tab-active');
+                myTab.classList.remove('tab-active');
+                myTab.classList.add('tab-inactive');
+                globalLeaderboard.classList.remove('hidden');
+                myLeaderboard.classList.add('hidden');
+            });
+
+            // 切换到我的最佳排行榜
+            myTab.addEventListener('click', function() {
+                myTab.classList.remove('tab-inactive');
+                myTab.classList.add('tab-active');
+                globalTab.classList.remove('tab-active');
+                globalTab.classList.add('tab-inactive');
+                myLeaderboard.classList.remove('hidden');
+                globalLeaderboard.classList.add('hidden');
+            });
+
+            // 难度选择按钮交互
+            const difficultyButtons = document.querySelectorAll('.bg-gray-100');
+            difficultyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按钮的选中状态
+                    document.querySelectorAll('.bg-primary').forEach(btn => {
+                        btn.classList.remove('bg-primary', 'text-white');
+                        btn.classList.add('bg-gray-100', 'hover:bg-gray-200');
+                    });
+                    // 添加当前按钮的选中状态
+                    this.classList.remove('bg-gray-100', 'hover:bg-gray-200');
+                    this.classList.add('bg-primary', 'text-white');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>舒尔特方格 - 游戏</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        light: '#F9FAFB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .btn-primary {
+                @apply bg-primary hover:bg-primary/90 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95;
+            }
+            .btn-secondary {
+                @apply bg-white hover:bg-gray-100 text-dark font-medium py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 border border-gray-200;
+            }
+            .btn-danger {
+                @apply bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg active:scale-95;
+            }
+            .card {
+                @apply bg-white rounded-xl shadow-md p-6 transition-all duration-300 hover:shadow-lg;
+            }
+            .grid-cell {
+                @apply bg-white rounded-lg flex items-center justify-center font-bold cursor-pointer transition-all duration-300 shadow-sm aspect-square;
+            }
+            .grid-cell:hover {
+                @apply bg-gray-50 scale-105;
+            }
+            .grid-cell-completed {
+                @apply bg-primary text-white cursor-not-allowed;
+            }
+            .grid-cell-current {
+                @apply bg-accent animate-pulse;
+            }
+            .modal {
+                @apply fixed inset-0 bg-black/50 z-50 hidden items-center justify-center p-4;
+            }
+            .modal.active {
+                @apply flex;
+            }
+            .modal-content {
+                @apply bg-white rounded-xl shadow-lg p-6 transition-all duration-300 transform translate-y-5 opacity-0 max-w-md w-full;
+            }
+            .modal.active .modal-content {
+                @apply translate-y-0 opacity-100;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen font-sans text-dark">
+    <!-- 顶部导航 -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-sm shadow-sm py-4 px-6">
+        <div class="flex justify-between items-center max-w-md mx-auto">
+            <a href="index.html" class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-300">
+                <i class="fa fa-arrow-left text-gray-600"></i>
+            </a>
+            <h1 class="text-xl font-bold text-primary">舒尔特方格</h1>
+            <button id="settingsBtn" class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-300">
+                <i class="fa fa-cog text-gray-600"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="container mx-auto px-6 py-6 flex flex-col items-center justify-center min-h-[calc(100vh-140px)] max-w-md w-full">
+        <!-- 游戏标题 -->
+        <div class="game-title text-center mb-6">
+            <h2 class="text-[clamp(1.5rem,4vw,1.8rem)] font-bold mb-1 text-dark">数字挑战</h2>
+            <p class="text-gray-600 text-sm">按顺序点击数字 1, 2, 3...</p>
+        </div>
+
+        <!-- 游戏容器 -->
+        <div class="game-container card w-full">
+            <!-- 游戏信息 -->
+            <div class="game-info w-full flex justify-between mb-4 pb-3 border-b border-gray-100">
+                <div class="info-item">
+                    <div class="info-label text-xs text-gray-500 mb-1">用时</div>
+                    <div class="info-value timer text-lg font-mono">00:00.00</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label text-xs text-gray-500 mb-1">进度</div>
+                    <div class="info-value flex items-center gap-1">
+                        <span id="currentNumber">1</span>/<span id="totalNumbers">16</span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label text-xs text-gray-500 mb-1">下一个</div>
+                    <div class="info-value next-number px-3 py-1 text-sm">1</div>
+                </div>
+            </div>
+
+            <!-- 游戏网格 -->
+            <div id="gameGrid" class="game-grid grid grid-cols-4 gap-2 bg-gray-50 p-3 rounded-lg mb-4 aspect-square w-full max-w-[300px] mx-auto"></div>
+
+            <!-- 游戏控制按钮 -->
+            <div class="game-controls flex gap-3 w-full justify-center flex-wrap mt-4">
+                <button id="startBtn" class="btn-primary flex-1 min-w-[120px] py-2.5">
+                    <i class="fa fa-play mr-2"></i> 开始
+                </button>
+                <button id="restartBtn" class="btn-secondary flex-1 min-w-[120px] py-2.5">
+                    <i class="fa fa-refresh mr-2"></i> 重新开始
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部导航 -->
+    <footer class="fixed bottom-0 left-0 right-0 bg-white shadow-lg py-2 px-6">
+        <div class="flex justify-around max-w-md mx-auto">
+            <a href="index.html" class="flex flex-col items-center text-gray-400">
+                <i class="fa fa-home text-lg"></i>
+                <span class="text-[10px] mt-1">首页</span>
+            </a>
+            <a href="game.html" class="flex flex-col items-center text-primary">
+                <i class="fa fa-gamepad text-lg"></i>
+                <span class="text-[10px] mt-1">游戏</span>
+            </a>
+            <a href="leaderboard.html" class="flex flex-col items-center text-gray-400">
+                <i class="fa fa-trophy text-lg"></i>
+                <span class="text-[10px] mt-1">排行</span>
+            </a>
+        </div>
+    </footer>
+
+    <!-- 设置弹窗 -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content transform transition-all duration-300 scale-95 opacity-0" id="settingsModalContent">
+            <div class="flex justify-between items-center mb-6 pb-3 border-b border-gray-100">
+                <h3 class="text-lg font-bold text-dark flex items-center">
+                    <i class="fa fa-cog mr-2 text-primary"></i> 游戏设置
+                </h3>
+                <button id="cancelSettingsBtn" class="p-2 rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-all duration-300">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-6 mb-8">
+                <!-- 网格大小 -->
+                <div class="setting-item">
+                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <i class="fa fa-th-large mr-2 text-primary"></i> 网格大小
+                    </label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button data-size="3" class="grid-size-btn py-3 px-4 rounded-lg border-2 border-primary bg-primary/10 text-primary font-medium transition-all duration-300 hover:bg-primary/20 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">3x3</button>
+                        <button data-size="4" class="grid-size-btn py-3 px-4 rounded-lg border-2 border-primary bg-primary text-white font-medium transition-all duration-300 hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">4x4</button>
+                        <button data-size="5" class="grid-size-btn py-3 px-4 rounded-lg border-2 border-gray-300 hover:border-primary/70 text-gray-700 font-medium transition-all duration-300 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">5x5</button>
+                        <button data-size="6" class="grid-size-btn py-3 px-4 rounded-lg border-2 border-gray-300 hover:border-primary/70 text-gray-700 font-medium transition-all duration-300 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2">6x6</button>
+                    </div>
+                    <input type="hidden" id="gridSize" value="4">
+                </div>
+
+                <!-- 难度级别 -->
+                <div class="setting-item">
+                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <i class="fa fa-signal mr-2 text-primary"></i> 难度级别
+                    </label>
+                    <div class="relative">
+                        <select id="difficulty" class="w-full p-3 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 bg-white pr-10 text-gray-700">
+                            <option value="easy">简单</option>
+                            <option value="medium" selected>中等</option>
+                            <option value="hard">困难</option>
+                            <option value="expert">专家</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-500">
+                            <i class="fa fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 主题选择 -->
+                <div class="setting-item">
+                    <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                        <i class="fa fa-paint-brush mr-2 text-primary"></i> 主题颜色
+                    </label>
+                    <div class="flex gap-3">
+                        <button data-theme="blue" class="theme-btn w-10 h-10 rounded-full bg-primary ring-2 ring-primary ring-offset-2 transition-all duration-300"></button>
+                        <button data-theme="green" class="theme-btn w-10 h-10 rounded-full bg-secondary transition-all duration-300 hover:ring-2 hover:ring-secondary hover:ring-offset-2"></button>
+                        <button data-theme="purple" class="theme-btn w-10 h-10 rounded-full bg-accent transition-all duration-300 hover:ring-2 hover:ring-accent hover:ring-offset-2"></button>
+                        <button data-theme="red" class="theme-btn w-10 h-10 rounded-full bg-red-500 transition-all duration-300 hover:ring-2 hover:ring-red-500 hover:ring-offset-2"></button>
+                    </div>
+                </div>
+
+                <!-- 游戏选项 -->
+                <div class="space-y-4 pt-2 border-t border-gray-100">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg transition-all duration-300 hover:bg-gray-100">
+                        <div class="flex items-center">
+                            <i class="fa fa-mobile mr-3 text-primary"></i>
+                            <span class="text-sm font-medium text-gray-700">震动反馈</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="vibration" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg transition-all duration-300 hover:bg-gray-100">
+                        <div class="flex items-center">
+                            <i class="fa fa-volume-up mr-3 text-primary"></i>
+                            <span class="text-sm font-medium text-gray-700">音效反馈</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="sound" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button id="cancelSettingsBtn" class="btn-secondary flex-1 py-3">取消</button>
+                <button id="saveSettingsBtn" class="btn-primary flex-1 py-3">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 动画效果 */
+        .modal.active #settingsModalContent {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+
+    <!-- 游戏结束弹窗 -->
+    <div id="gameOverModal" class="modal">
+        <div class="modal-content">
+            <div class="text-center mb-4">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-3">
+                    <i class="fa fa-trophy text-2xl text-secondary"></i>
+                </div>
+                <h3 class="text-lg font-bold text-dark mb-1">完成挑战!</h3>
+                <p class="text-sm text-gray-600 mb-3">恭喜您完成了舒尔特方格挑战</p>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-5 pb-5 border-b border-gray-100">
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-1">用时</p>
+                    <p id="finalTime" class="text-xl font-bold text-primary">00:08.45</p>
+                </div>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <p class="text-xs text-gray-500 mb-1">成绩</p>
+                    <p id="finalScore" class="text-xl font-bold text-secondary">优秀</p>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button id="playAgainBtn" class="btn-primary flex-1 py-2.5">再玩一次</button>
+                <button id="backToSettingsBtn" class="btn-secondary flex-1 py-2.5">返回设置</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏状态变量
+        let gameState = {
+            isPlaying: false,
+            startTime: 0,
+            timerInterval: null,
+            currentNumber: 1,
+            gridSize: 4,
+            difficulty: 'easy',
+            showVibration: true,
+            numbers: []
+        };
+
+        // DOM元素
+        const gameGrid = document.getElementById('gameGrid');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const gameOverModal = document.getElementById('gameOverModal');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const backToSettingsBtn = document.getElementById('backToSettingsBtn');
+        const timerDisplay = document.querySelector('.timer');
+        const currentNumberDisplay = document.getElementById('currentNumber');
+        const totalNumbersDisplay = document.getElementById('totalNumbers');
+        const nextNumberDisplay = document.querySelector('.next-number');
+        const finalTimeDisplay = document.getElementById('finalTime');
+        const finalScoreDisplay = document.getElementById('finalScore');
+        const gridSizeSelect = document.getElementById('gridSize');
+        const difficultySelect = document.getElementById('difficulty');
+        const vibrationCheckbox = document.getElementById('vibration');
+
+        // 初始化游戏
+        function initGame() {
+            // 设置初始游戏状态
+            updateGameInfo();
+            generateGrid();
+
+            // 添加事件监听器
+            startBtn.addEventListener('click', startGame);
+            restartBtn.addEventListener('click', restartGame);
+            settingsBtn.addEventListener('click', showSettings);
+            cancelSettingsBtn.addEventListener('click', hideSettings);
+            saveSettingsBtn.addEventListener('click', saveSettings);
+            playAgainBtn.addEventListener('click', playAgain);
+            backToSettingsBtn.addEventListener('click', backToSettings);
+
+            // 初始化设置表单
+            gridSizeSelect.value = gameState.gridSize;
+            difficultySelect.value = gameState.difficulty;
+            vibrationCheckbox.checked = gameState.showVibration;
+        }
+
+        // 更新游戏信息显示
+        function updateGameInfo() {
+            currentNumberDisplay.textContent = gameState.currentNumber;
+            totalNumbersDisplay.textContent = gameState.gridSize * gameState.gridSize;
+            nextNumberDisplay.textContent = gameState.currentNumber;
+            gameGrid.style.gridTemplateColumns = `repeat(${gameState.gridSize}, 1fr)`;
+        }
+
+        // 生成游戏网格
+        function generateGrid() {
+            gameGrid.innerHTML = '';
+            gameState.numbers = [];
+
+            // 创建数字数组
+            const totalNumbers = gameState.gridSize * gameState.gridSize;
+            for (let i = 1; i <= totalNumbers; i++) {
+                gameState.numbers.push(i);
+            }
+
+            // 随机打乱数组
+            shuffleArray(gameState.numbers);
+
+            // 根据难度设置样式
+            let fontSize = 'text-2xl';
+            if (gameState.gridSize === 5) fontSize = 'text-xl';
+            if (gameState.gridSize === 6) fontSize = 'text-lg';
+
+            // 创建网格单元格
+            gameState.numbers.forEach(number => {
+                const cell = document.createElement('div');
+                cell.classList.add('grid-cell', fontSize);
+                cell.textContent = number;
+                cell.dataset.number = number;
+
+                // 添加点击事件
+                cell.addEventListener('click', () => handleCellClick(cell));
+
+                gameGrid.appendChild(cell);
+            });
+        }
+
+        // 处理单元格点击
+        function handleCellClick(cell) {
+            if (!gameState.isPlaying) return;
+
+            const number = parseInt(cell.dataset.number);
+
+            if (number === gameState.currentNumber) {
+                // 正确点击
+                cell.classList.add('grid-cell-completed');
+                gameState.currentNumber++;
+
+                // 更新显示
+                updateGameInfo();
+
+                // 震动反馈
+                if (gameState.showVibration) {
+                    navigator.vibrate?.(50);
+                }
+
+                // 检查游戏是否结束
+                if (gameState.currentNumber > gameState.gridSize * gameState.gridSize) {
+                    endGame();
+                } else {
+                    // 高亮下一个数字
+                    highlightNextNumber();
+                }
+            } else {
+                // 错误点击
+                cell.classList.add('animate-shake');
+                setTimeout(() => cell.classList.remove('animate-shake'), 300);
+
+                // 震动反馈
+                if (gameState.showVibration) {
+                    navigator.vibrate?.(100);
+                }
+            }
+        }
+
+        // 高亮下一个数字
+        function highlightNextNumber() {
+            // 移除之前的高亮
+            document.querySelectorAll('.grid-cell-current').forEach(cell => {
+                cell.classList.remove('grid-cell-current');
+            });
+
+            // 添加新的高亮
+            const nextCell = document.querySelector(`[data-number="${gameState.currentNumber}"]`);
+            if (nextCell) {
+                nextCell.classList.add('grid-cell-current');
+            }
+        }
+
+        // 开始游戏
+        function startGame() {
+            if (gameState.isPlaying) return;
+
+            gameState.isPlaying = true;
+            gameState.startTime = Date.now();
+            startBtn.disabled = true;
+            startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            // 开始计时器
+            gameState.timerInterval = setInterval(updateTimer, 10);
+
+            // 高亮第一个数字
+            highlightNextNumber();
+        }
+
+        // 重新开始游戏
+        function restartGame() {
+            stopGame();
+            gameState.currentNumber = 1;
+            updateGameInfo();
+            generateGrid();
+        }
+
+        // 停止游戏
+        function stopGame() {
+            gameState.isPlaying = false;
+            clearInterval(gameState.timerInterval);
+            startBtn.disabled = false;
+            startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            // 移除所有高亮
+            document.querySelectorAll('.grid-cell-current').forEach(cell => {
+                cell.classList.remove('grid-cell-current');
+            });
+        }
+
+        // 结束游戏
+        function endGame() {
+            stopGame();
+            const endTime = Date.now();
+            const timeTaken = (endTime - gameState.startTime) / 1000;
+
+            // 格式化时间
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = Math.floor(timeTaken % 60);
+            const milliseconds = Math.floor((timeTaken % 1) * 100);
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+
+            // 显示结果
+            finalTimeDisplay.textContent = formattedTime;
+
+            // 根据时间和难度评估成绩
+            let scoreText = '优秀';
+            const totalNumbers = gameState.gridSize * gameState.gridSize;
+            const baseTimePerNumber = gameState.difficulty === 'easy' ? 1.5 :
+                                      gameState.difficulty === 'medium' ? 1.2 :
+                                      gameState.difficulty === 'hard' ? 1.0 : 0.8;
+            const targetTime = totalNumbers * baseTimePerNumber;
+
+            if (timeTaken > targetTime * 2) {
+                scoreText = '需要练习';
+            } else if (timeTaken > targetTime * 1.5) {
+                scoreText = '一般';
+            } else if (timeTaken > targetTime) {
+                scoreText = '良好';
+            }
+            finalScoreDisplay.textContent = scoreText;
+
+            // 显示游戏结束弹窗
+            gameOverModal.classList.add('active');
+        }
+
+        // 更新计时器
+        function updateTimer() {
+            const currentTime = Date.now();
+            const timeTaken = (currentTime - gameState.startTime) / 1000;
+
+            // 格式化时间
+            const minutes = Math.floor(timeTaken / 60);
+            const seconds = Math.floor(timeTaken % 60);
+            const milliseconds = Math.floor((timeTaken % 1) * 100);
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+
+            timerDisplay.textContent = formattedTime;
+        }
+
+        // 打乱数组
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // 显示设置
+        function showSettings() {
+            settingsModal.classList.add('active');
+            // 暂停游戏
+            if (gameState.isPlaying) {
+                clearInterval(gameState.timerInterval);
+            }
+
+            // 添加入场动画
+            setTimeout(() => {
+                document.getElementById('settingsModalContent').classList.add('scale-100', 'opacity-100');
+                document.getElementById('settingsModalContent').classList.remove('scale-95', 'opacity-0');
+            }, 10);
+
+            // 初始化网格大小按钮状态
+            document.querySelectorAll('.grid-size-btn').forEach(btn => {
+                if (btn.dataset.size === gameState.gridSize.toString()) {
+                    btn.classList.add('bg-primary', 'text-white');
+                    btn.classList.remove('bg-primary/10', 'text-primary', 'border-gray-300');
+                } else {
+                    btn.classList.add('bg-primary/10', 'text-primary', 'border-gray-300', 'hover:border-primary/70', 'hover:bg-primary/5');
+                    btn.classList.remove('bg-primary', 'text-white');
+                }
+            });
+        }
+
+        // 隐藏设置
+        function hideSettings() {
+            // 添加退场动画
+            document.getElementById('settingsModalContent').classList.remove('scale-100', 'opacity-100');
+            document.getElementById('settingsModalContent').classList.add('scale-95', 'opacity-0');
+
+            setTimeout(() => {
+                settingsModal.classList.remove('active');
+                // 恢复游戏
+                if (gameState.isPlaying) {
+                    gameState.timerInterval = setInterval(updateTimer, 10);
+                }
+            }, 300);
+        }
+
+        // 网格大小按钮点击事件
+        document.querySelectorAll('.grid-size-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 更新按钮状态
+                document.querySelectorAll('.grid-size-btn').forEach(b => {
+                    b.classList.add('bg-primary/10', 'text-primary', 'border-gray-300', 'hover:border-primary/70', 'hover:bg-primary/5');
+                    b.classList.remove('bg-primary', 'text-white');
+                });
+                btn.classList.add('bg-primary', 'text-white');
+                btn.classList.remove('bg-primary/10', 'text-primary', 'border-gray-300');
+
+                // 更新隐藏输入字段
+                document.getElementById('gridSize').value = btn.dataset.size;
+            });
+        });
+
+        // 主题按钮点击事件
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 更新按钮状态
+                document.querySelectorAll('.theme-btn').forEach(b => {
+                    b.classList.remove('ring-2', 'ring-offset-2');
+                });
+                btn.classList.add('ring-2', 'ring-offset-2');
+
+                // 这里可以添加主题切换逻辑
+                const theme = btn.dataset.theme;
+                let primaryColor = '#3B82F6'; // 默认蓝色
+
+                if (theme === 'green') primaryColor = '#10B981';
+                else if (theme === 'purple') primaryColor = '#8B5CF6';
+                else if (theme === 'red') primaryColor = '#EF4444';
+
+                // 更新CSS变量
+                document.documentElement.style.setProperty('--primary-color', primaryColor);
+            });
+        });
+
+        // 保存设置
+        function saveSettings() {
+            const newGridSize = parseInt(document.getElementById('gridSize').value);
+            const newDifficulty = difficultySelect.value;
+            const newVibration = vibrationCheckbox.checked;
+            const newSound = document.getElementById('sound').checked;
+
+            // 更新游戏状态
+            gameState.gridSize = newGridSize;
+            gameState.difficulty = newDifficulty;
+            gameState.showVibration = newVibration;
+            gameState.showSound = newSound;
+
+            // 播放保存成功音效
+            if (gameState.showSound) {
+                playSound('save');
+            }
+
+            // 显示保存成功提示
+            const saveToast = document.createElement('div');
+            saveToast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-primary text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-all duration-500 opacity-0';
+            saveToast.textContent = '设置已保存';
+            document.body.appendChild(saveToast);
+
+            setTimeout(() => {
+                saveToast.classList.remove('opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                saveToast.classList.add('opacity-0');
+                setTimeout(() => {
+                    document.body.removeChild(saveToast);
+                }, 500);
+            }, 2000);
+
+            // 重新初始化游戏
+            restartGame();
+
+            // 隐藏设置弹窗
+            hideSettings();
+        }
+
+        // 音效播放函数
+        function playSound(type) {
+            // 这里可以实现实际的音效播放逻辑
+            // 简单示例：使用Web Audio API生成简单音效
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                if (type === 'save') {
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.5);
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                } else if (type === 'click') {
+                    oscillator.type = 'square';
+                    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                }
+            } catch (e) {
+                console.log('音效播放失败:', e);
+            }
+        }
+
+        // 为所有按钮添加点击音效
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', () => {
+                if (gameState.showSound) {
+                    playSound('click');
+                }
+            });
+        });
+
+        // 再玩一次
+        function playAgain() {
+            gameOverModal.classList.remove('active');
+            restartGame();
+            startGame();
+        }
+
+        // 返回设置
+        function backToSettings() {
+            gameOverModal.classList.remove('active');
+            showSettings();
+        }
+
+        // 添加震动动画
+        document.head.insertAdjacentHTML('beforeend', `
+            <style>
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-5px); }
+                    75% { transform: translateX(5px); }
+                }
+                .animate-shake {
+                    animation: shake 0.3s ease-in-out;
+                }
+            </style>
+        `);
+
+        // 初始化游戏
+        document.addEventListener('DOMContentLoaded', initGame);

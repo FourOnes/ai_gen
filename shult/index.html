@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>舒尔特方格训练</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        light: '#F9FAFB'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .grid-cell {
+                @apply flex items-center justify-center rounded-md cursor-pointer transition-all duration-300 hover:shadow-lg active:scale-95 font-bold;
+            }
+            .grid-cell-active {
+                @apply bg-primary text-white;
+            }
+            .grid-cell-completed {
+                @apply bg-secondary text-white;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light min-h-screen flex flex-col items-center justify-center p-4 text-dark font-sans">
+    <div class="max-w-2xl w-full bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
+        <h1 class="text-2xl md:text-3xl font-bold text-center text-primary mb-6">舒尔特方格训练</h1>
+        <p class="text-center text-gray-600 mb-8">提升注意力、观察力和反应速度的经典训练工具</p>
+
+        <!-- 控制面板 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h2 class="font-semibold mb-3">游戏设置</h2>
+                <div class="mb-4">
+                    <label for="grid-size" class="block text-sm font-medium text-gray-700 mb-1">方格大小</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="range" id="grid-size" min="3" max="10" value="5" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary">
+                        <span id="grid-size-value" class="text-primary font-semibold w-8 text-center">5x5</span>
+                    </div>
+                </div>
+                <button id="start-btn" class="w-full bg-primary hover:bg-primary/90 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300 flex items-center justify-center space-x-2">
+                    <i class="fa fa-play"></i>
+                    <span>开始游戏</span>
+                </button>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h2 class="font-semibold mb-3">游戏数据</h2>
+                <div class="flex flex-col space-y-4">
+                    <div>
+                        <div class="text-sm font-medium text-gray-700 mb-1">当前进度</div>
+                        <div class="flex items-center justify-between bg-gray-200 rounded-full h-4 overflow-hidden">
+                            <div id="progress-bar" class="bg-primary h-full w-0 transition-all duration-300"></div>
+                        </div>
+                        <div class="flex justify-between text-xs mt-1 text-gray-500">
+                            <span id="current-number">1</span>
+                            <span id="total-numbers">25</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-sm font-medium text-gray-700 mb-1">用时</div>
+                        <div id="timer" class="text-2xl font-mono font-bold text-primary text-center">00:00.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏区域 -->
+        <div id="game-container" class="flex justify-center items-center bg-gray-50 rounded-lg p-4 min-h-[300px] md:min-h-[400px] mb-6">
+            <div id="grid-container" class="grid gap-2 w-full max-w-md transition-all duration-500 grid-cols-5"></div>
+        </div>
+
+        <!-- 游戏状态和提示 -->
+        <div id="game-status" class="text-center py-3 rounded-lg mb-6 hidden">
+            <p id="status-message" class="font-medium text-lg"></p>
+            <p id="best-time" class="text-sm text-gray-500 mt-1"></p>
+        </div>
+    </div>
+
+    <footer class="text-center text-sm text-gray-500 mb-4">
+        <p>舒尔特方格训练 | 提升注意力的有效工具</p>
+    </footer>
+
+    <script>
+        // 游戏状态变量
+        let gameState = {
+            gridSize: 5,
+            totalNumbers: 25,
+            currentNumber: 1,
+            startTime: 0,
+            endTime: 0,
+            isPlaying: false,
+            timerInterval: null,
+            bestTimes: {}
+        };
+
+        // DOM 元素
+        const gridSizeSlider = document.getElementById('grid-size');
+        const gridSizeValue = document.getElementById('grid-size-value');
+        const gridContainer = document.getElementById('grid-container');
+        const startBtn = document.getElementById('start-btn');
+        const timer = document.getElementById('timer');
+        const progressBar = document.getElementById('progress-bar');
+        const currentNumber = document.getElementById('current-number');
+        const totalNumbers = document.getElementById('total-numbers');
+        const gameStatus = document.getElementById('game-status');
+        const statusMessage = document.getElementById('status-message');
+        const bestTime = document.getElementById('best-time');
+
+        // 初始化
+        function init() {
+            // 加载本地存储的最佳时间
+            const savedBestTimes = localStorage.getItem('shulteBestTimes');
+            if (savedBestTimes) {
+                gameState.bestTimes = JSON.parse(savedBestTimes);
+            }
+
+            // 更新网格大小显示
+            updateGridSizeDisplay();
+
+            // 事件监听
+            gridSizeSlider.addEventListener('input', updateGridSizeDisplay);
+            startBtn.addEventListener('click', startGame);
+
+            // 生成初始网格
+            generateGrid();
+        }
+
+        // 更新网格大小显示
+        function updateGridSizeDisplay() {
+            gameState.gridSize = parseInt(gridSizeSlider.value);
+            gameState.totalNumbers = gameState.gridSize * gameState.gridSize;
+            gridSizeValue.textContent = `${gameState.gridSize}x${gameState.gridSize}`;
+            totalNumbers.textContent = gameState.totalNumbers;
+            currentNumber.textContent = 1;
+            progressBar.style.width = '0%';
+
+            // 如果不在游戏中，更新网格
+            if (!gameState.isPlaying) {
+                generateGrid();
+            }
+        }
+
+        // 生成网格
+        function generateGrid() {
+            // 清空网格
+            gridContainer.innerHTML = '';
+
+            // 设置网格列数
+            gridContainer.className = `grid gap-2 w-full max-w-md transition-all duration-500 grid-cols-${gameState.gridSize}`;
+
+            // 生成数字数组并打乱
+            const numbers = Array.from({ length: gameState.totalNumbers }, (_, i) => i + 1);
+            shuffleArray(numbers);
+
+            // 计算单元格的尺寸
+            const cellSize = Math.min(100, 300 / gameState.gridSize);
+
+            // 生成网格单元格
+            numbers.forEach(num => {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell bg-gray-100 text-dark';
+                cell.style.width = `${cellSize}px`;
+                cell.style.height = `${cellSize}px`;
+                cell.style.fontSize = `${Math.max(14, cellSize / 3)}px`;
+                cell.textContent = num;
+                cell.dataset.number = num;
+                cell.addEventListener('click', handleCellClick);
+                gridContainer.appendChild(cell);
+            });
+        }
+
+        // 打乱数组
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // 开始游戏
+        function startGame() {
+            // 重置游戏状态
+            gameState.currentNumber = 1;
+            gameState.isPlaying = true;
+            gameState.startTime = Date.now();
+
+            // 更新UI
+            startBtn.innerHTML = '<i class="fa fa-refresh"></i> <span>重新开始</span>';
+            gameStatus.classList.add('hidden');
+            progressBar.style.width = '0%';
+            currentNumber.textContent = 1;
+
+            // 生成新网格
+            generateGrid();
+
+            // 启动计时器
+            clearInterval(gameState.timerInterval);
+            gameState.timerInterval = setInterval(updateTimer, 10);
+        }
+
+        // 处理单元格点击
+        function handleCellClick(event) {
+            if (!gameState.isPlaying) return;
+
+            const cell = event.currentTarget;
+            const number = parseInt(cell.dataset.number);
+
+            // 检查是否点击了正确的数字
+            if (number === gameState.currentNumber) {
+                // 标记为已完成
+                cell.classList.remove('bg-gray-100');
+                cell.classList.add('grid-cell-completed');
+
+                // 更新进度
+                gameState.currentNumber++;
+                const progress = ((gameState.currentNumber - 1) / gameState.totalNumbers) * 100;
+                progressBar.style.width = `${progress}%`;
+                currentNumber.textContent = gameState.currentNumber;
+
+                // 检查是否完成游戏
+                if (gameState.currentNumber > gameState.totalNumbers) {
+                    finishGame();
+                } else {
+                    // 高亮显示下一个数字
+                    highlightNextNumber();
+                }
+            } else if (number > gameState.currentNumber) {
+                // 点击了过大的数字
+                cell.classList.add('animate-shake');
+                setTimeout(() => {
+                    cell.classList.remove('animate-shake');
+                }, 500);
+            }
+        }
+
+        // 高亮显示下一个数字
+        function highlightNextNumber() {
+            const cells = gridContainer.querySelectorAll('.grid-cell');
+            cells.forEach(cell => {
+                if (parseInt(cell.dataset.number) === gameState.currentNumber) {
+                    cell.classList.add('grid-cell-active');
+                    setTimeout(() => {
+                        cell.classList.remove('grid-cell-active');
+                    }, 1000);
+                }
+            });
+        }
+
+        // 完成游戏
+        function finishGame() {
+            gameState.isPlaying = false;
+            gameState.endTime = Date.now();
+            clearInterval(gameState.timerInterval);
+
+            // 计算用时
+            const elapsedTime = gameState.endTime - gameState.startTime;
+            const minutes = Math.floor(elapsedTime / 60000);
+            const seconds = Math.floor((elapsedTime % 60000) / 1000);
+            const milliseconds = Math.floor((elapsedTime % 1000) / 10);
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+
+            // 更新UI
+            startBtn.innerHTML = '<i class="fa fa-play"></i> <span>开始游戏</span>';
+            gameStatus.classList.remove('hidden');
+            statusMessage.textContent = `恭喜！您完成了 ${gameState.gridSize}x${gameState.gridSize} 的舒尔特方格，用时: ${formattedTime}`;
+
+            // 检查是否是最佳时间
+            const key = `${gameState.gridSize}x${gameState.gridSize}`;
+            if (!gameState.bestTimes[key] || elapsedTime < gameState.bestTimes[key]) {
+                gameState.bestTimes[key] = elapsedTime;
+                // 保存到本地存储
+                localStorage.setItem('shulteBestTimes', JSON.stringify(gameState.bestTimes));
+                bestTime.textContent = `新的最佳时间！`;
+            } else {
+                // 格式化最佳时间
+                const bestElapsedTime = gameState.bestTimes[key];
+                const bestMinutes = Math.floor(bestElapsedTime / 60000);
+                const bestSeconds = Math.floor((bestElapsedTime % 60000) / 1000);
+                const bestMilliseconds = Math.floor((bestElapsedTime % 1000) / 10);
+                const bestFormattedTime = `${bestMinutes.toString().padStart(2, '0')}:${bestSeconds.toString().padStart(2, '0')}.${bestMilliseconds.toString().padStart(2, '0')}`;
+                bestTime.textContent = `最佳时间: ${bestFormattedTime}`;
+            }
+        }
+
+        // 更新计时器
+        function updateTimer() {
+            if (!gameState.isPlaying) return;
+
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - gameState.startTime;
+            const minutes = Math.floor(elapsedTime / 60000);
+            const seconds = Math.floor((elapsedTime % 60000) / 1000);
+            const milliseconds = Math.floor((elapsedTime % 1000) / 10);
+            timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(2, '0')}`;
+        }
+
+        // 添加动画样式
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                20%, 60% { transform: translateX(-5px); }
+                40%, 80% { transform: translateX(5px); }
+            }
+            .animate-shake {
+                animation: shake 0.5s ease-in-out;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // 初始化游戏
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

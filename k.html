@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Konva 拖拽控件编辑器</title>
+  <script src="https://cdn.jsdelivr.net/npm/konva@9.2.0/konva.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+    #toolbox {
+      width: 200px;
+      background: #f0f0f0;
+      padding: 10px;
+      box-sizing: border-box;
+      border-right: 1px solid #ccc;
+    }
+    #toolbox h3 {
+      margin-top: 0;
+    }
+    .tool-item {
+      padding: 8px;
+      margin-bottom: 8px;
+      background: #fff;
+      border: 1px solid #ccc;
+      cursor: grab;
+      text-align: center;
+    }
+    #editor {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    #toolbar {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      background: #fafafa;
+    }
+    #container {
+      flex: 1;
+      background: #fff;
+    }
+    .drag-preview {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0.7;
+      z-index: 9999;
+      background: #ddd;
+      padding: 4px 8px;
+      border: 1px dashed #333;
+      font-size: 14px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toolbox">
+    <h3>控件库</h3>
+    <div class="tool-item" draggable="true" data-type="text">文字</div>
+    <div class="tool-item" draggable="true" data-type="rect">矩形</div>
+    <div class="tool-item" draggable="true" data-type="circle">圆形</div>
+  </div>
+
+  <div id="editor">
+    <div id="toolbar">
+      <button id="export">导出图片</button>
+    </div>
+    <div id="container"></div>
+  </div>
+
+  <script>
+    const stage = new Konva.Stage({
+      container: 'container',
+      width: window.innerWidth - 200,
+      height: window.innerHeight - 50,
+    });
+
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    let currentDragType = null;
+    let dragPreview = null;
+
+    const toolboxItems = document.querySelectorAll('.tool-item');
+
+    toolboxItems.forEach(item => {
+      item.addEventListener('dragstart', e => {
+        currentDragType = e.target.dataset.type;
+
+        // 创建预览
+        dragPreview = document.createElement('div');
+        dragPreview.className = 'drag-preview';
+        dragPreview.innerText = e.target.innerText;
+        document.body.appendChild(dragPreview);
+      });
+
+      item.addEventListener('dragend', e => {
+        currentDragType = null;
+        if (dragPreview) {
+          dragPreview.remove();
+          dragPreview = null;
+        }
+      });
+    });
+
+    // 鼠标跟随预览
+    document.addEventListener('dragover', e => {
+      if (dragPreview) {
+        dragPreview.style.left = e.pageX + 10 + 'px';
+        dragPreview.style.top = e.pageY + 10 + 'px';
+      }
+    });
+
+    const container = stage.container();
+
+    container.addEventListener('dragover', e => {
+      e.preventDefault();
+    });
+
+    container.addEventListener('drop', e => {
+      e.preventDefault();
+      if (!currentDragType) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const x = e.clientX - containerRect.left;
+      const y = e.clientY - containerRect.top;
+
+      if (currentDragType === 'text') {
+        const text = new Konva.Text({
+          text: '双击编辑',
+          x: x,
+          y: y,
+          fontSize: 24,
+          draggable: true,
+          fill: 'black',
+        });
+
+        text.on('dblclick', () => {
+          const newText = prompt('编辑文字：', text.text());
+          if (newText !== null) {
+            text.text(newText);
+            layer.draw();
+          }
+        });
+
+        layer.add(text);
+      } else if (currentDragType === 'rect') {
+        const rect = new Konva.Rect({
+          x: x,
+          y: y,
+          width: 100,
+          height: 60,
+          fill: 'skyblue',
+          stroke: 'black',
+          strokeWidth: 1,
+          draggable: true,
+        });
+
+        layer.add(rect);
+      } else if (currentDragType === 'circle') {
+        const circle = new Konva.Circle({
+          x: x,
+          y: y,
+          radius: 40,
+          fill: 'lightgreen',
+          stroke: 'black',
+          strokeWidth: 1,
+          draggable: true,
+        });
+
+        layer.add(circle);
+      }
+
+      layer.draw();
+
+      // 清除预览
+      if (dragPreview) {
+        dragPreview.remove();
+        dragPreview = null;
+      }
+    });
+
+    // 导出
+    document.getElementById('export').addEventListener('click', () => {
+      const dataURL = stage.toDataURL({ pixelRatio: 2 });
+      const link = document.createElement('a');
+      link.download = 'canvas-export.png';
+      link.href = dataURL;
+      link.click();
+    });
+  </script>
+
+</body>
+</html>
