@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科学实验演示平台 - 资源列表</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // 暗黑模式切换
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        light: '#F3F4F6'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+            .nav-link {
+                @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200;
+            }
+            .filter-active {
+                @apply bg-primary text-white dark:bg-primary dark:text-white;
+            }
+            .filter-option {
+                @apply px-3 py-1 rounded-md text-sm transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-800;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light text-gray-800 dark:bg-dark dark:text-gray-200 min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-md transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-flask text-primary dark:text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold text-primary dark:text-primary">科学实验演示平台</h1>
+            </div>
+
+            <!-- 桌面导航 -->
+            <nav class="hidden md:flex items-center space-x-1">
+                <a href="index.html" class="nav-link hover:bg-gray-100 dark:hover:bg-gray-800">首页</a>
+                <a href="categories.html" class="nav-link hover:bg-gray-100 dark:hover:bg-gray-800">分类</a>
+                <a href="#about" class="nav-link hover:bg-gray-100 dark:hover:bg-gray-800">关于我们</a>
+                <button id="theme-toggle" class="nav-link hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="fa fa-moon-o dark:hidden"></i>
+                    <i class="fa fa-sun-o hidden dark:inline-block"></i>
+                </button>
+            </nav>
+
+            <!-- 移动端菜单按钮 -->
+            <button id="mobile-menu-button" class="md:hidden nav-link hover:bg-gray-100 dark:hover:bg-gray-800">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-gray-900 shadow-lg absolute w-full transition-all duration-300 ease-in-out">
+            <div class="px-4 py-2 space-y-1">
+                <a href="index.html" class="block nav-link hover:bg-gray-100 dark:hover:bg-gray-800">首页</a>
+                <a href="categories.html" class="block nav-link hover:bg-gray-100 dark:hover:bg-gray-800">分类</a>
+                <a href="#about" class="block nav-link hover:bg-gray-100 dark:hover:bg-gray-800">关于我们</a>
+                <button id="mobile-theme-toggle" class="block w-full text-left nav-link hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="fa fa-moon-o dark:hidden mr-2"></i>
+                    <i class="fa fa-sun-o hidden dark:inline-block mr-2"></i>
+                    切换主题
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <!-- 页面标题和路径导航 -->
+        <section class="mb-8">
+            <div class="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 mb-4">
+                <a href="index.html" class="hover:text-primary dark:hover:text-primary transition-colors duration-300">首页</a>
+                <span class="mx-2">/</span>
+                <a href="categories.html" class="hover:text-primary dark:hover:text-primary transition-colors duration-300">分类</a>
+                <span class="mx-2">/</span>
+                <span class="text-primary dark:text-primary">物理实验</span>
+            </div>
+            <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold mb-2">物理实验</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-3xl">
+                探索力学、电磁学、光学、热力学等物理学领域的奇妙现象和定律。以下是我们精心挑选的物理实验演示资源。
+            </p>
+        </section>
+
+        <!-- 筛选和排序 -->
+        <section class="mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 md:p-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <div>
+                    <h3 class="font-semibold mb-2">筛选</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="filter-option filter-active">全部</button>
+                        <button class="filter-option">力学</button>
+                        <button class="filter-option">电磁学</button>
+                        <button class="filter-option">光学</button>
+                        <button class="filter-option">热力学</button>
+                        <button class="filter-option">声学</button>
+                    </div>
+                </div>
+                <div class="w-full md:w-auto">
+                    <h3 class="font-semibold mb-2">排序</h3>
+                    <select class="w-full md:w-auto px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary text-gray-700 dark:text-gray-200 text-sm">
+                        <option value="newest">最新发布</option>
+                        <option value="most_viewed">最多浏览</option>
+                        <option value="highest_rated">最高评分</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400">
+                <div>找到 32 个资源</div>
+                <div class="flex items-center space-x-2">
+                    <span>视图:</span>
+                    <button class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fa fa-th-large"></i></button>
+                    <button class="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fa fa-list"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 资源列表 -->
+        <section class="mb-16">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 资源卡片1 -->
+                <a href="detail.html?id=1" class="card-hover bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md flex flex-col h-full">
+                    <div class="relative pb-[56.25%] overflow-hidden">
+                        <img src="https://picsum.photos/id/1/400/225" alt="牛顿摆实验" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                        <div class="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full">物理</div>
+                        <div class="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                            <i class="fa fa-play-circle mr-1"></i> 视频
+                        </div>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col">
+                        <h4 class="text-lg font-semibold mb-2 line-clamp-2">牛顿摆实验演示</h4>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 flex-grow">展示动量守恒和能量传递的经典物理实验。通过钢球的碰撞，直观理解牛顿力学定律。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
+                            <span><i class="fa fa-eye mr-1"></i> 1,234</span>
+                            <span><i class="fa fa-star text-yellow-400 mr-1"></i> 4.8</span>
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <span><i class="fa fa-calendar mr-1"></i> 2023-05-15</span>
+                            <span class="ml-auto"><i class="fa fa-clock-o mr-1"></i> 3:45</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 资源卡片2 -->
+                <a href="detail.html?id=4" class="card-hover bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md flex flex-col h-full">
+                    <div class="relative pb-[56.25%] overflow-hidden">
+                        <img src="https://picsum.photos/id/100/400/225" alt="电磁感应实验" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                        <div class="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full">物理</div>
+                        <div class="absolute bottom-2 left-2 bg-purple-600/70 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                            <i class="fa fa-mouse-pointer mr-1"></i> 交互
+                        </div>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col">
+                        <h4 class="text-lg font-semibold mb-2 line-clamp-2">电磁感应实验</h4>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 flex-grow">探索磁场如何产生电流的法拉第电磁感应定律。通过调整磁铁位置和速度，观察电流变化。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
+                            <span><i class="fa fa-eye mr-1"></i> 1,123</span>
+                            <span><i class="fa fa-star text-yellow-400 mr-1"></i> 4.7</span>
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <span><i class="fa fa-calendar mr-1"></i> 2023-08-10</span>
+                            <span class="ml-auto"><i class="fa fa-clock-o mr-1"></i> 5:20</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 资源卡片3 -->
+                <a href="detail.html?id=5" class="card-hover bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md flex flex-col h-full">
+                    <div class="relative pb-[56.25%] overflow-hidden">
+                        <img src="https://picsum.photos/id/250/400/225" alt="光的折射实验" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                        <div class="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full">物理</div>
+                        <div class="absolute bottom-2 left-2 bg-green-600/70 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                            <i class="fa fa-film mr-1"></i> 动画
+                        </div>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col">
+                        <h4 class="text-lg font-semibold mb-2 line-clamp-2">光的折射实验</h4>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 flex-grow">演示光从一种介质进入另一种介质时的折射现象。通过不同角度和介质，观察光线路径的变化。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
+                            <span><i class="fa fa-eye mr-1"></i> 987</span>
+                            <span><i class="fa fa-star text-yellow-400 mr-1"></i> 4.6</span>
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <span><i class="fa fa-calendar mr-1"></i> 2023-06-30</span>
+                            <span class="ml-auto"><i class="fa fa-clock-o mr-1"></i> 4:15</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 资源卡片4 -->
+                <a href="detail.html?id=6" class="card-hover bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md flex flex-col h-full">
+                    <div class="relative pb-[56.25%] overflow-hidden">
+                        <img src="https://picsum.photos/id/150/400/225" alt="杠杆原理演示" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                        <div class="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full">物理</div>
+                        <div class="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                            <i class="fa fa-play-circle mr-1"></i> 视频
+                        </div>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col">
+                        <h4 class="text-lg font-semibold mb-2 line-clamp-2">杠杆原理演示</h4>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 flex-grow">展示杠杆的平衡条件和力矩原理。通过调整力臂和重量，直观理解杠杆的省力原理。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
+                            <span><i class="fa fa-eye mr-1"></i> 876</span>
+                            <span><i class="fa fa-star text-yellow-400 mr-1"></i> 4.5</span>
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <span><i class="fa fa-calendar mr-1"></i> 2023-07-20</span>
+                            <span class="ml-auto"><i class="fa fa-clock-o mr-1"></i> 3:50</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 资源卡片5 -->
+                <a href="detail.html?id=7" class="card-hover bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md flex flex-col h-full">
+                    <div class="relative pb-[56.25%] overflow-hidden">
+                        <img src="https://picsum.photos/id/200/400/225" alt="自由落体实验" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                        <div class="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full">物理</div>
+                        <div class="absolute bottom-2 left-2 bg-purple-600/70 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                            <i class="fa fa-mouse-pointer mr-1"></i> 交互
+                        </div>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col">
+                        <h4 class="text-lg font-semibold mb-2 line-clamp-2">自由落体实验</h4>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 flex-grow">模拟伽利略的自由落体实验，验证不同质量物体在真空中下落速度相同的原理。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
+                            <span><i class="fa fa-eye mr-1"></i> 765</span>
+                            <span><i class="fa fa-star text-yellow-400 mr-1"></i> 4.4</span>
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <span><i class="fa fa-calendar mr-1"></i> 2023-09-05</span>
+                            <span class="ml-auto"><i class="fa fa-clock-o mr-1"></i> 4:30</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- 资源卡片6 -->
+                <a href="detail.html?id=8" class="card-hover bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-md flex flex-col h-full">
+                    <div class="relative pb-[56.25%] overflow-hidden">
+                        <img src="https://picsum.photos/id/300/400/225" alt="声波干涉演示" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                        <div class="absolute top-2 right-2 bg-primary text-white text-xs px-2 py-1 rounded-full">物理</div>
+                        <div class="absolute bottom-2 left-2 bg-green-600/70 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                            <i class="fa fa-film mr-1"></i> 动画
+                        </div>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col">
+                        <h4 class="text-lg font-semibold mb-2 line-clamp-2">声波干涉演示</h4>
+                        <p class="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2 flex-grow">展示声波的干涉现象，包括相长干涉和相消干涉。通过调整声源位置和频率，观察声波的叠加效果。</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-2">
+                            <span><i class="fa fa-eye mr-1"></i> 654</span>
+                            <span><i class="fa fa-star text-yellow-400 mr-1"></i> 4.3</span>
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <span><i class="fa fa-calendar mr-1"></i> 2023-09-20</span>
+                            <span class="ml-auto"><i class="fa fa-clock-o mr-1"></i> 5:10</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 分页 -->
+            <div class="mt-10 flex justify-center">
+                <nav class="inline-flex rounded-md shadow-sm" aria-label="分页">
+                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">
+                        <span class="sr-only">上一页</span>
+                        <i class="fa fa-chevron-left"></i>
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-primary text-sm font-medium text-white dark:border-primary dark:bg-primary">
+                        1
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700">
+                        2
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700">
+                        3
+                    </a>
+                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200">
+                        ...
+                    </span>
+                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700">
+                        6
+                    </a>
+                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700">
+                        <span class="sr-only">下一页</span>
+                        <i class="fa fa-chevron-right"></i>
+                    </a>
+                </nav>
+            </div>
+        </section>
+
+        <!-- 关于我们 -->
+        <section id="about" class="mb-16 bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 md:p-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h3 class="text-2xl font-bold mb-4">关于我们</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">
+                    我们致力于创建一个集科学实验演示、动画和交互体验于一体的在线平台，让学习科学变得更加生动有趣。
+                    无论你是学生、教师还是科学爱好者，都能在这里找到适合自己的资源。
+                </p>
+                <div class="flex justify-center space-x-4 text-gray-500 dark:text-gray-400">
+                    <a href="#" class="hover:text-primary dark:hover:text-primary transition-colors duration-300"><i class="fa fa-facebook-square text-xl"></i></a>
+                    <a href="#" class="hover:text-primary dark:hover:text-primary transition-colors duration-300"><i class="fa fa-twitter-square text-xl"></i></a>
+                    <a href="#" class="hover:text-primary dark:hover:text-primary transition-colors duration-300"><i class="fa fa-youtube-play text-xl"></i></a>
+                    <a href="#" class="hover:text-primary dark:hover:text-primary transition-colors duration-300"><i class="fa fa-instagram text-xl"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white dark:bg-gray-900 shadow-inner py-8 transition-colors duration-300">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fa fa-flask text-primary dark:text-primary text-xl"></i>
+                        <h3 class="text-lg font-bold text-primary dark:text-primary">科学实验演示平台</h3>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm">
+                        让科学实验变得生动有趣，随时随地探索科学的奥秘。
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">快速链接</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="index.html" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors duration-300">首页</a></li>
+                        <li><a href="categories.html" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors duration-300">分类</a></li>
+                        <li><a href="#about" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors duration-300">关于我们</a></li>
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors duration-300">联系我们</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">订阅更新</h4>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                        获取最新的科学实验演示和教学资源信息。
+                    </p>
+                    <form class="flex">
+                        <input type="email" placeholder="你的邮箱地址" class="px-4 py-2 rounded-l-lg flex-grow border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary text-sm">
+                        <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-colors duration-300 text-sm">
+                            订阅
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 dark:border-gray-800 pt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                <p>&copy; 2023 科学实验演示平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 暗黑模式切换
+        const themeToggle = document.getElementById('theme-toggle');
+        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+        const html = document.documentElement;
+
+        // 检查本地存储中的主题偏好
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            html.classList.toggle('dark');
+            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+        mobileThemeToggle.addEventListener('click', toggleTheme);
+
+        // 移动端菜单
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 点击导航链接后关闭移动端菜单
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // 筛选按钮切换
+        document.querySelectorAll('.filter-option').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.filter-option').forEach(btn => {
+                    btn.classList.remove('filter-active');
+                });
+                button.classList.add('filter-active');
+            });
+        });
+    </script>
+</body>
+</html>

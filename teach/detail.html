@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>科学实验演示平台 - 牛顿摆实验演示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        // 暗黑模式切换
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1F2937',
+                        light: '#F3F4F6'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .card-hover {
+                @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+            }
+            .nav-link {
+                @apply px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light text-gray-800 dark:bg-dark dark:text-gray-200 min-h-screen flex flex-col">
+    <!-- 导航栏 -->
+    <header class="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-md transition-colors duration-300">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-flask text-primary dark:text-primary text-2xl"></i>
+                <h1 class="text-xl font-bold text-primary dark:text-primary">科学实验演示平台</h1>
+            </div>
+
+            <!-- 桌面导航 -->
+            <nav class="hidden md:flex items-center space-x-1">
+                <a href="index.html" class="nav-link hover:bg-gray-100 dark:hover:bg-gray-800">首页</a>
+                <a href="categories.html" class="nav-link hover:bg-gray-100 dark:hover:bg-gray-800">分类</a>
+                <a href="#about" class="nav-link hover:bg-gray-100 dark:hover:bg-gray-800">关于我们</a>
+                <button id="theme-toggle" class="nav-link hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="fa fa-moon-o dark:hidden"></i>
+                    <i class="fa fa-sun-o hidden dark:inline-block"></i>
+                </button>
+            </nav>
+
+            <!-- 移动端菜单按钮 -->
+            <button id="mobile-menu-button" class="md:hidden nav-link hover:bg-gray-100 dark:hover:bg-gray-800">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white dark:bg-gray-900 shadow-lg absolute w-full transition-all duration-300 ease-in-out">
+            <div class="px-4 py-2 space-y-1">
+                <a href="index.html" class="block nav-link hover:bg-gray-100 dark:hover:bg-gray-800">首页</a>
+                <a href="categories.html" class="block nav-link hover:bg-gray-100 dark:hover:bg-gray-800">分类</a>
+                <a href="#about" class="block nav-link hover:bg-gray-100 dark:hover:bg-gray-800">关于我们</a>
+                <button id="mobile-theme-toggle" class="block w-full text-left nav-link hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <i class="fa fa-moon-o dark:hidden mr-2"></i>
+                    <i class="fa fa-sun-o hidden dark:inline-block mr-2"></i>
+                    切换主题
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容 -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <!-- 页面路径导航 -->
+        <section class="mb-6">
+            <div class="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400">
+                <a href="index.html" class="hover:text-primary dark:hover:text-primary transition-colors duration-300">首页</a>
+                <span class="mx-2">/</span>
+                <a href="categories.html" class="hover:text-primary dark:hover:text-primary transition-colors duration-300">分类</a>
+                <span class="mx-2">/</span>
+                <a href="list.html?category=physics" class="hover:text-primary dark:hover:text-primary transition-colors duration-300">物理实验</a>
+                <span class="mx-2">/</span>
+                <span class="text-primary dark:text-primary">牛顿摆实验演示</span>
+            </div>
+        </section>
+
+        <!-- 资源详情 -->
+        <section class="mb-12">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 左侧：资源演示 -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-6">
+                        <div class="relative pb-[56.25%] bg-gray-900">
+                            <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/d134QJQZ-1Q" title="牛顿摆实验演示" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <div class="p-4 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center space-x-4">
+                                <button class="flex items-center space-x-1 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                    <i class="fa fa-thumbs-up"></i>
+                                    <span>245</span>
+                                </button>
+                                <button class="flex items-center space-x-1 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                    <i class="fa fa-thumbs-down"></i>
+                                    <span>12</span>
+                                </button>
+                                <button class="flex items-center space-x-1 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                    <i class="fa fa-share-alt"></i>
+                                    <span>分享</span>
+                                </button>
+                            </div>
+                            <button class="flex items-center space-x-1 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                <i class="fa fa-bookmark-o"></i>
+                                <span>收藏</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+                        <h2 class="text-2xl font-bold mb-4">牛顿摆实验演示</h2>
+                        <div class="flex flex-wrap items-center text-sm text-gray-500 dark:text-gray-400 mb-6">
+                            <span class="flex items-center mr-4 mb-2"><i class="fa fa-user mr-1"></i> 科学教育团队</span>
+                            <span class="flex items-center mr-4 mb-2"><i class="fa fa-calendar mr-1"></i> 2023-05-15</span>
+                            <span class="flex items-center mr-4 mb-2"><i class="fa fa-eye mr-1"></i> 1,234 次观看</span>
+                            <span class="flex items-center mr-4 mb-2"><i class="fa fa-clock-o mr-1"></i> 3:45</span>
+                            <span class="flex items-center mb-2"><i class="fa fa-star text-yellow-400 mr-1"></i> 4.8 (56 评分)</span>
+                        </div>
+                        <div class="prose dark:prose-invert max-w-none">
+                            <p class="mb-4">
+                                牛顿摆是一个经典的物理实验装置，由几个质量相同的钢球通过细线悬挂在同一水平线上组成。当最左侧的钢球被拉起并释放后，它会撞击相邻的钢球，通过动量守恒和能量传递，最右侧的钢球会被弹起，然后又落回撞击，如此反复。
+                            </p>
+                            <p class="mb-4">
+                                这个实验直观地展示了动量守恒定律和能量守恒定律。在理想情况下（无空气阻力和能量损失），这个过程会永远持续下去。但在实际情况中，由于能量逐渐损耗，摆动的幅度会逐渐减小，最终停止。
+                            </p>
+                            <h3 class="text-xl font-bold mt-6 mb-3">实验原理</h3>
+                            <p class="mb-4">
+                                牛顿摆的工作原理基于两个基本物理定律：
+                            </p>
+                            <ol class="list-decimal pl-5 mb-4 space-y-2">
+                                <li><strong>动量守恒定律</strong>：在一个封闭系统中，系统的总动量保持不变。当左侧钢球撞击右侧钢球时，它的动量传递给右侧钢球，使右侧钢球获得相同的动量。</li>
+                                <li><strong>能量守恒定律</strong>：能量既不能被创造也不能被消灭，只能从一种形式转化为另一种形式。在牛顿摆中，势能转化为动能，再转化为势能，如此反复。</li>
+                            </ol>
+                            <h3 class="text-xl font-bold mt-6 mb-3">实验应用</h3>
+                            <p>
+                                牛顿摆不仅是一个有趣的物理演示装置，还具有实际应用价值：
+                            </p>
+                            <ul class="list-disc pl-5 space-y-2">
+                                <li>用于教学，帮助学生理解动量守恒和能量守恒定律</li>
+                                <li>用于物理研究，探索碰撞过程中的能量损失和动量传递</li>
+                                <li>作为减震装置的设计灵感，如汽车碰撞缓冲系统</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 评论区 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <h3 class="text-xl font-bold mb-4">评论 (12)</h3>
+                        <div class="space-y-6">
+                            <!-- 评论输入框 -->
+                            <div class="mb-8">
+                                <textarea placeholder="写下你的评论..." class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary resize-none h-24"></textarea>
+                                <div class="flex justify-end mt-2">
+                                    <button class="px-4 py-2 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg shadow transition-colors duration-300">
+                                        发表评论
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 评论列表 -->
+                            <div class="space-y-4">
+                                <!-- 评论1 -->
+                                <div class="flex space-x-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                                    <img src="https://picsum.photos/id/64/40/40" alt="用户头像" class="w-10 h-10 rounded-full object-cover">
+                                    <div class="flex-grow">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <h4 class="font-medium">张同学</h4>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">2023-05-16</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">这个实验演示很直观，让我对动量守恒有了更深刻的理解。感谢分享！</p>
+                                        <div class="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
+                                            <button class="hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                                <i class="fa fa-thumbs-up mr-1"></i> 32
+                                            </button>
+                                            <button class="hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                                <i class="fa fa-thumbs-down mr-1"></i> 0
+                                            </button>
+                                            <button class="hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                                回复
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 评论2 -->
+                                <div class="flex space-x-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                                    <img src="https://picsum.photos/id/91/40/40" alt="用户头像" class="w-10 h-10 rounded-full object-cover">
+                                    <div class="flex-grow">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <h4 class="font-medium">李老师</h4>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">2023-05-18</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">作为物理老师，我经常在课堂上使用牛顿摆演示动量守恒。这个视频制作得非常专业，可以作为很好的教学辅助材料。</p>
+                                        <div class="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
+                                            <button class="hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                                <i class="fa fa-thumbs-up mr-1"></i> 45
+                                            </button>
+                                            <button class="hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                                <i class="fa fa-thumbs-down mr-1"></i> 1
+                                            </button>
+                                            <button class="hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                                回复
+                                            </button>
+                                        </div>
+
+                                        <!-- 回复 -->
+                                        <div class="mt-3 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+                                            <div class="flex space-x-3 mb-3">
+                                                <img src="https://picsum.photos/id/65/30/30" alt="用户头像" class="w-7 h-7 rounded-full object-cover">
+                                                <div class="flex-grow">
+                                                    <div class="flex justify-between items-center mb-1">
+                                                        <h5 class="font-medium text-sm">王同学</h5>
+                                                        <span class="text-xs text-gray-500 dark:text-gray-400">2023-05-19</span>
+                                                    </div>
+                                                    <p class="text-xs text-gray-600 dark:text-gray-300">谢谢李老师的推荐，这个视频确实帮助我理解了动量守恒定律。</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 评论3 -->
+                                <div class="flex space-x-4">
+                                    <img src="https://picsum.photos/id/22/40/40" alt="用户头像" class="w-10 h-10 rounded-full object-cover">
+                                    <div class="flex-grow">
+                                        <div class="flex justify-between items-center mb-1">
+                                            <h4 class="font-medium">赵同学</h4>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400">2023-06-01</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">有没有人知道这个实验中如果使用不同质量的钢球会发生什么？</p>
+                                        <div class="flex items-center space-x-3 text-xs text-gray-500 dark:text-gray-400">
+                                            <button class="hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                                <i class="fa fa-thumbs-up mr-1"></i> 18
+                                            </button>
+                                            <button class="hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                                <i class="fa fa-thumbs-down mr-1"></i> 0
+                                            </button>
+                                            <button class="hover:text-primary dark:hover:text-primary transition-colors duration-300">
+                                                回复
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 加载更多评论 -->
+                            <div class="text-center mt-6">
+                                <button class="px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300">
+                                    加载更多评论
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：资源信息和推荐 -->
+                <div class="lg:col-span-1">
+                    <!-- 资源信息 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+                        <h3 class="text-lg font-bold mb-4">资源信息</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <span class="text-gray-500 dark:text-gray-400 w-20 flex-shrink-0">分类</span>
+                                <div class="flex-grow">
+                                    <a href="list.html?category=physics" class="text-primary dark:text-primary hover:underline">物理实验</a>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-gray-500 dark:text-gray-400 w-20 flex-shrink-0">子分类</span>
+                                <div class="flex-grow">
+                                    <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary">力学</a>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-gray-500 dark:text-gray-400 w-20 flex-shrink-0">标签</span>
+                                <div class="flex-grow flex flex-wrap gap-2">
+                                    <a href="#" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs px-2 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300">动量守恒</a>
+                                    <a href="#" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs px-2 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300">能量守恒</a>
+                                    <a href="#" class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs px-2 py-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-300">碰撞</a>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-gray-500 dark:text-gray-400 w-20 flex-shrink-0">难度</span>
+                                <div class="flex-grow">
+                                    <span class="text-gray-700 dark:text-gray-300">初级</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-gray-500 dark:text-gray-400 w-20 flex-shrink-0">适用年龄</span>
+                                <div class="flex-grow">
+                                    <span class="text-gray-700 dark:text-gray-300">10-18岁</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-gray-500 dark:text-gray-400 w-20 flex-shrink-0">格式</span>
+                                <div class="flex-grow">
+                                    <span class="text-gray-700 dark:text-gray-300">视频</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-gray-500 dark:text-gray-400 w-20 flex-shrink-0">分辨率</span>
+                                <div class="flex-grow">
+                                    <span class="text-gray-700 dark:text-gray-300">1080p</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="text-gray-500 dark:text-gray-400 w-20 flex-shrink-0">语言</span>
+                                <div class="flex-grow">
+                                    <span class="text-gray-700 dark:text-gray-300">中文</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 相关资源 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-6">
+                        <h3 class="text-lg font-bold mb-4">相关资源</h3>
+                        <div class="space-y-4">
+                            <!-- 相关资源1 -->
+                            <a href="detail.html?id=4" class="flex items-center space-x-3 group">
+                                <div class="relative w-20 h-11 overflow-hidden rounded">
+                                    <img src="https://picsum.photos/id/100/100/56" alt="电磁感应实验" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <i class="fa fa-play text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow min-w-0">
+                                    <h4 class="text-sm font-medium line-clamp-2 group-hover:text-primary dark:group-hover:text-primary transition-colors duration-300">电磁感应实验</h4>
+                                    <div class="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        <span><i class="fa fa-eye mr-1"></i> 1,123</span>
+                                        <span class="mx-2">·</span>
+                                        <span><i class="fa fa-star text-yellow-400 mr-1"></i> 4.7</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- 相关资源2 -->
+                            <a href="detail.html?id=5" class="flex items-center space-x-3 group">
+                                <div class="relative w-20 h-11 overflow-hidden rounded">
+                                    <img src="https://picsum.photos/id/250/100/56" alt="光的折射实验" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <i class="fa fa-play text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow min-w-0">
+                                    <h4 class="text-sm font-medium line-clamp-2 group-hover:text-primary dark:group-hover:text-primary transition-colors duration-300">光的折射实验</h4>
+                                    <div class="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        <span><i class="fa fa-eye mr-1"></i> 987</span>
+                                        <span class="mx-2">·</span>
+                                        <span><i class="fa fa-star text-yellow-400 mr-1"></i> 4.6</span>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <!-- 相关资源3 -->
+                            <a href="detail.html?id=6" class="flex items-center space-x-3 group">
+                                <div class="relative w-20 h-11 overflow-hidden rounded">
+                                    <img src="https://picsum.photos/id/150/100/56" alt="杠杆原理演示" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <i class="fa fa-play text-white"></i>
+                                    </div>
+                                </div>
+                                <div class="flex-grow min-w-0">
+                                    <h4 class="text-sm font-medium line-clamp-2 group-hover:text-primary dark:group-hover:text-primary transition-colors duration-300">杠杆原理演示</h4>
+                                    <div class="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        <span><i class="fa fa-eye mr-1"></i> 876</span>
+                                        <span class="mx-2">·</span>
+                                        <span><i class="fa fa-star text-yellow-400 mr-1"></i> 4.5</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="text-center mt-4">
+                            <a href="list.html?category=physics" class="text-primary dark:text-primary hover:underline text-sm font-medium">查看更多相关资源</a>
+                        </div>
+                    </div>
+
+                    <!-- 分享和举报 -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+                        <h3 class="text-lg font-bold mb-4">分享</h3>
+                        <div class="flex justify-center space-x-4 mb-6">
+                            <a href="#" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors duration-300">
+                                <i class="fa fa-facebook"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 hover:bg-blue-300 transition-colors duration-300">
+                                <i class="fa fa-twitter"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600 hover:bg-red-200 transition-colors duration-300">
+                                <i class="fa fa-youtube-play"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 hover:bg-green-200 transition-colors duration-300">
+                                <i class="fa fa-whatsapp"></i>
+                            </a>
+                        </div>
+                        <div class="text-center">
+                            <button class="text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 text-sm font-medium transition-colors duration-300 flex items-center justify-center mx-auto">
+                                <i class="fa fa-flag mr-1"></i> 举报资源
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 关于我们 -->
+        <section id="about" class="mb-16 bg-white dark:bg-gray-800 rounded-xl shadow-md p-8 md:p-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <h3 class="text-2xl font-bold mb-4">关于我们</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">
+                    我们致力于创建一个集科学实验演示、动画和交互体验于一体的在线平台，让学习科学变得更加生动有趣。
+                    无论你是学生、教师还是科学爱好者，都能在这里找到适合自己的资源。
+                </p>
+                <div class="flex justify-center space-x-4 text-gray-500 dark:text-gray-400">
+                    <a href="#" class="hover:text-primary dark:hover:text-primary transition-colors duration-300"><i class="fa fa-facebook-square text-xl"></i></a>
+                    <a href="#" class="hover:text-primary dark:hover:text-primary transition-colors duration-300"><i class="fa fa-twitter-square text-xl"></i></a>
+                    <a href="#" class="hover:text-primary dark:hover:text-primary transition-colors duration-300"><i class="fa fa-youtube-play text-xl"></i></a>
+                    <a href="#" class="hover:text-primary dark:hover:text-primary transition-colors duration-300"><i class="fa fa-instagram text-xl"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-white dark:bg-gray-900 shadow-inner py-8 transition-colors duration-300">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fa fa-flask text-primary dark:text-primary text-xl"></i>
+                        <h3 class="text-lg font-bold text-primary dark:text-primary">科学实验演示平台</h3>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm">
+                        让科学实验变得生动有趣，随时随地探索科学的奥秘。
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">快速链接</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="index.html" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors duration-300">首页</a></li>
+                        <li><a href="categories.html" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors duration-300">分类</a></li>
+                        <li><a href="#about" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors duration-300">关于我们</a></li>
+                        <li><a href="#" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary transition-colors duration-300">联系我们</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">订阅更新</h4>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                        获取最新的科学实验演示和教学资源信息。
+                    </p>
+                    <form class="flex">
+                        <input type="email" placeholder="你的邮箱地址" class="px-4 py-2 rounded-l-lg flex-grow border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-primary dark:focus:ring-primary text-sm">
+                        <button type="submit" class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-r-lg transition-colors duration-300 text-sm">
+                            订阅
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 dark:border-gray-800 pt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                <p>&copy; 2023 科学实验演示平台. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // 暗黑模式切换
+        const themeToggle = document.getElementById('theme-toggle');
+        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+        const html = document.documentElement;
+
+        // 检查本地存储中的主题偏好
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            html.classList.add('dark');
+        } else {
+            html.classList.remove('dark');
+        }
+
+        // 切换主题
+        function toggleTheme() {
+            html.classList.toggle('dark');
+            localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+        mobileThemeToggle.addEventListener('click', toggleTheme);
+
+        // 移动端菜单
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // 点击导航链接后关闭移动端菜单
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
